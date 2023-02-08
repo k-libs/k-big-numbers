@@ -1,6 +1,71 @@
 package io.klibs.math
 
-interface BigInt {
+sealed interface BigInt {
+  val isNegative: Boolean
+  val isPositive: Boolean
+
+  /**
+   * Tests whether the value of this [BigInt] could fit into a [Byte] without
+   * overflowing it.
+   *
+   * Essentially testing `-128 <= this <= 127`
+   *
+   * @return `true` if the value of this `BigInt` could fit into a `Byte` type
+   * without overflowing it.  `false` if the value of this `BigInt` would
+   * overflow a `Byte`.
+   */
+  fun fitsByte(): Boolean
+
+  /**
+   * Tests whether the value of this [BigInt] could fit into a [Short] without
+   * overflowing it.
+   *
+   * Essentially testing `-32768 <= this <= 32767`
+   *
+   * @return `true` if the value of this `BigInt` could fit into a `Short` type
+   * without overflowing it.  `false` if the value of this `BigInt` would
+   * overflow a `Short`.
+   */
+  fun fitsShort(): Boolean
+
+  /**
+   * Tests whether the value of this [BigInt] could fit into a [Int] without
+   * overflowing it.
+   *
+   * Essentially testing `-2147483648 <= this <= 2147483647`
+   *
+   * @return `true` if the value of this `BigInt` could fit into a `Int` type
+   * without overflowing it.  `false` if the value of this `BigInt` would
+   * overflow a `Int`.
+   */
+  fun fitsInt(): Boolean
+
+  /**
+   * Tests whether the value of this [BigInt] could fit into a [Long] without
+   * overflowing it.
+   *
+   * Essentially testing `-9223372036854775808 <= this <= 9223372036854775807`
+   *
+   * @return `true` if the value of this `BigInt` could fit into a `Long` type
+   * without overflowing it.  `false` if the value of this `BigInt` would
+   * overflow a `Long`.
+   */
+  fun fitsLong(): Boolean
+
+  fun fitsUByte(): Boolean
+  fun fitsUShort(): Boolean
+  fun fitsUInt(): Boolean
+  fun fitsULong(): Boolean
+
+  fun toByte(): Byte
+  fun toShort(): Short
+  fun toInt(): Int
+  fun toLong(): Long
+  fun toUByte(): UByte
+  fun toUShort(): UShort
+  fun toUInt(): UInt
+  fun toULong(): ULong
+
   operator fun plus(lhs: Byte): BigInt
   operator fun plus(lhs: Short): BigInt
   operator fun plus(lhs: Int): BigInt
@@ -40,6 +105,16 @@ interface BigInt {
   operator fun div(lhs: UInt): BigInt
   operator fun div(lhs: ULong): BigInt
   operator fun div(lhs: BigInt): BigInt
+
+  operator fun rem(lhs: Byte): BigInt
+  operator fun rem(lhs: Short): BigInt
+  operator fun rem(lhs: Int): BigInt
+  operator fun rem(lhs: Long): BigInt
+  operator fun rem(lhs: UByte): BigInt
+  operator fun rem(lhs: UShort): BigInt
+  operator fun rem(lhs: UInt): BigInt
+  operator fun rem(lhs: ULong): BigInt
+  operator fun rem(lhs: BigInt): BigInt
 
   fun toPlainString(): String
 }
