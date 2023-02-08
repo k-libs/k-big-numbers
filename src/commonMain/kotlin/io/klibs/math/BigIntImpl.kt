@@ -266,14 +266,128 @@ internal class BigIntImpl(
     if (isNegative)
       return false
 
-    TODO("Not yet implemented")
+    trimToSize()
+
+    return if (digits.size > 10)
+      false
+    else if (digits.size < 10)
+      true
+    else if (digits[0] > UBYTE_4)
+      false
+    else if (digits[0] < UBYTE_4)
+      true
+    else if (digits[1] > UBYTE_2)
+      false
+    else if (digits[1] < UBYTE_2)
+      true
+    else if (digits[2] < UBYTE_9)
+      true
+    else if (digits[3] > UBYTE_4)
+      false
+    else if (digits[3] < UBYTE_4)
+      true
+    else if (digits[4] < UBYTE_9)
+      true
+    else if (digits[5] > UBYTE_6)
+      false
+    else if (digits[5] < UBYTE_6)
+      true
+    else if (digits[6] > UBYTE_7)
+      false
+    else if (digits[6] < UBYTE_7)
+      true
+    else if (digits[7] > UBYTE_2)
+      false
+    else if (digits[7] < UBYTE_2)
+      true
+    else if (digits[8] < UBYTE_9)
+      true
+    else
+      digits[9] <= UBYTE_5
   }
 
   override fun fitsULong(): Boolean {
     if (isNegative)
       return false
 
-    TODO("Not yet implemented")
+    trimToSize()
+
+    return if (digits.size > 20)
+      false
+    else if (digits.size < 20)
+      true
+    else if (digits[0] > UBYTE_1)
+      false
+    else if (digits[0] < UBYTE_1)
+      true
+    else if (digits[1] > UBYTE_8)
+      false
+    else if (digits[1] < UBYTE_8)
+      true
+    else if (digits[2] > UBYTE_4)
+      false
+    else if (digits[2] < UBYTE_4)
+      true
+    else if (digits[3] > UBYTE_4)
+      false
+    else if (digits[3] < UBYTE_4)
+      true
+    else if (digits[4] > UBYTE_6)
+      false
+    else if (digits[4] < UBYTE_6)
+      true
+    else if (digits[5] > UBYTE_7)
+      false
+    else if (digits[5] < UBYTE_7)
+      true
+    else if (digits[6] > UBYTE_4)
+      false
+    else if (digits[6] < UBYTE_4)
+      true
+    else if (digits[7] > UBYTE_4)
+      false
+    else if (digits[7] < UBYTE_4)
+      true
+    else if (digits[8] > UBYTE_0)
+      false
+    else if (digits[9] > UBYTE_7)
+      false
+    else if (digits[9] < UBYTE_7)
+      true
+    else if (digits[10] > UBYTE_3)
+      false
+    else if (digits[10] < UBYTE_3)
+      true
+    else if (digits[11] > UBYTE_7)
+      false
+    else if (digits[11] < UBYTE_7)
+      true
+    else if (digits[12] > UBYTE_0)
+      false
+    else if (digits[13] < UBYTE_9)
+      true
+    else if (digits[14] > UBYTE_5)
+      false
+    else if (digits[14] < UBYTE_5)
+      true
+    else if (digits[15] > UBYTE_5)
+      false
+    else if (digits[15] < UBYTE_5)
+      true
+    else if (digits[16] > UBYTE_1)
+      false
+    else if (digits[16] < UBYTE_1)
+      true
+    else if (digits[17] > UBYTE_6)
+      false
+    else if (digits[17] < UBYTE_6)
+      true
+    else if (digits[18] > UBYTE_1)
+      false
+    else if (digits[18] < UBYTE_1)
+      true
+    else
+      digits[19] <= UBYTE_5
   }
 
   // endregion Fits Unsigned
@@ -283,19 +397,27 @@ internal class BigIntImpl(
   // region To
 
   override fun toByte(): Byte {
-    TODO("Not yet implemented")
+    var out: Byte = 0
+    digits.peekEach { out = (out * 10 + it.toByte()).toByte() }
+    return out
   }
 
   override fun toShort(): Short {
-    TODO("Not yet implemented")
+    var out: Short = 0
+    digits.peekEach { out = (out * 10 + it.toShort()).toShort() }
+    return out
   }
 
   override fun toInt(): Int {
-    TODO("Not yet implemented")
+    var out = 0
+    digits.peekEach { out = out * 10 + it.toInt() }
+    return out
   }
 
   override fun toLong(): Long {
-    TODO("Not yet implemented")
+    var out = 0L
+    digits.peekEach { out = out * 10 + it.toLong() }
+    return out
   }
 
   override fun toUByte(): UByte {
