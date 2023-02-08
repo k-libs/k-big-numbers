@@ -5,6 +5,32 @@ import kotlin.test.assertEquals
 
 class BigIntImplTest {
 
+  // region toByte()
+
+  @Test
+  fun toByte_1() {
+    assertEquals(0, bigIntOf("0").toByte())
+  }
+
+  @Test
+  fun toByte_2() {
+    assertEquals(-1, bigIntOf("-1").toByte())
+  }
+
+  @Test
+  fun toByte_3() {
+    assertEquals(-10, bigIntOf("-10").toByte())
+  }
+
+  @Test
+  fun toByte_4() {
+    assertEquals(-100, bigIntOf("-100").toByte())
+  }
+
+
+
+  // endregion toByte()
+
   // region plus(Byte)
 
   @Test

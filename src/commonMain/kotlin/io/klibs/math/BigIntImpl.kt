@@ -399,13 +399,13 @@ internal class BigIntImpl(
   override fun toByte(): Byte {
     var out: Byte = 0
     digits.peekEach { out = (out * 10 + it.toByte()).toByte() }
-    return out
+    return if (isNegative) (-out).toByte() else out
   }
 
   override fun toShort(): Short {
     var out: Short = 0
     digits.peekEach { out = (out * 10 + it.toShort()).toShort() }
-    return out
+    return if (isNegative) (-out).toShort() else out
   }
 
   override fun toInt(): Int {
@@ -417,7 +417,7 @@ internal class BigIntImpl(
   override fun toLong(): Long {
     var out = 0L
     digits.peekEach { out = out * 10 + it.toLong() }
-    return out
+    return if (isNegative) -out else out
   }
 
   override fun toUByte(): UByte {
