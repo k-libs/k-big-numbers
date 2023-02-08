@@ -593,7 +593,12 @@ internal class BigIntImpl(
   override fun minus(lhs: UInt) = minus(lhs.toULong())
 
   override fun minus(lhs: ULong): BigInt {
-    TODO("Not yet implemented")
+    return if (lhs == 0uL)
+      BigIntImpl(isNegative, digits)
+    else if (isNegative)
+      posPlus(lhs)
+    else
+      posMinus(lhs)
   }
 
   private fun posMinus(lhs: ULong): BigInt {
