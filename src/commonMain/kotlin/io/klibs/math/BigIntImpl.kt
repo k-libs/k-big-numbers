@@ -446,7 +446,7 @@ internal class BigIntImpl(
 
   override fun plus(lhs: Long): BigInt {
     return if (lhs == 0L)
-      this
+      BigIntImpl(isNegative, digits)
     else if (isNegative) {
       if (lhs > 0L)
         posMinus(lhs)
@@ -496,7 +496,7 @@ internal class BigIntImpl(
 
   override fun plus(lhs: ULong): BigInt {
     return if (lhs == 0uL)
-      return this
+      BigIntImpl(isNegative, digits)
     else if (isNegative)
       posMinus(lhs)
     else
@@ -534,7 +534,30 @@ internal class BigIntImpl(
   }
 
   override fun plus(lhs: BigInt): BigInt {
-    TODO("Not yet implemented")
+    return if (isNegative && lhs.isNegative)
+      posPlus(lhs as BigIntImpl)
+    else
+      posMinus(lhs as BigIntImpl)
+  }
+
+  private fun posPlus(lhs: BigIntImpl): BigInt {
+    val out = UByteDeque(max(lhs.digits.size, digits.size))
+
+    var sum: UInt
+    var car = 0u
+
+    for (i in out.capacity downTo 1) {
+      sum = (digits.getOrZero(i) + lhs.digits.getOrZero(i)) + car
+      car = sum / 10u
+      out.pushFirst((sum % 10u).toUByte())
+    }
+
+    if (car > 0u)
+      out.pushFirst(car.toUByte())
+
+    out.trimToSize()
+
+    return BigIntImpl(isNegative, out)
   }
 
   // endregion Plus
@@ -546,24 +569,28 @@ internal class BigIntImpl(
   override fun minus(lhs: Int) = minus(lhs.toLong())
 
   override fun minus(lhs: Long): BigInt {
-    TODO("Not yet implemented")
+    return if (lhs == 0L)
+      BigIntImpl(isNegative, digits)
+    else if (isNegative) {
+      if (lhs < 0L)
+        posMinus(-lhs)
+      else
+        posPlus(lhs)
+    } else {
+      if (lhs < 0L)
+        posPlus(-lhs)
+      else
+        posMinus(lhs)
+    }
   }
 
   private fun posMinus(lhs: Long): BigInt {
     TODO()
   }
 
-  override fun minus(lhs: UByte): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun minus(lhs: UShort): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun minus(lhs: UInt): BigInt {
-    TODO("Not yet implemented")
-  }
+  override fun minus(lhs: UByte) = minus(lhs.toULong())
+  override fun minus(lhs: UShort) = minus(lhs.toULong())
+  override fun minus(lhs: UInt) = minus(lhs.toULong())
 
   override fun minus(lhs: ULong): BigInt {
     TODO("Not yet implemented")
@@ -575,6 +602,10 @@ internal class BigIntImpl(
 
   override fun minus(lhs: BigInt): BigInt {
     TODO("Not yet implemented")
+  }
+
+  private fun posMinus(lhs: BigIntImpl): BigInt {
+    TODO()
   }
 
   // endregion Minus

@@ -14,6 +14,9 @@ internal const val UBYTE_9: UByte = 9u
 internal const val B_ASCII_ZERO: Byte = 48
 internal const val U_ASCII_ZERO: UByte = 48u
 
+internal inline fun min(a: Int, b: Int): Int = if (a < b) a else b
+internal inline fun max(a: Int, b: Int): Int = if (a > b) a else b
+
 internal fun Char.isBase10Digit(): Boolean = this in '0' .. '9'
 
 internal fun Byte.decStringWidth() =
