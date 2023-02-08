@@ -647,6 +647,8 @@ internal class BigIntImpl(
 
   // endregion Minus
 
+  // region Times
+
   override fun times(lhs: Byte) = times(lhs.toLong())
   override fun times(lhs: Short) = times(lhs.toLong())
   override fun times(lhs: Int) = times(lhs.toLong())
@@ -667,33 +669,21 @@ internal class BigIntImpl(
     TODO("Not yet implemented")
   }
 
-  override fun div(lhs: Byte): BigInt {
-    TODO("Not yet implemented")
-  }
+  // endregion Times
 
-  override fun div(lhs: Short): BigInt {
-    TODO("Not yet implemented")
-  }
+  // region Div
 
-  override fun div(lhs: Int): BigInt {
-    TODO("Not yet implemented")
-  }
+  override fun div(lhs: Byte) = div(lhs.toLong())
+  override fun div(lhs: Short) = div(lhs.toLong())
+  override fun div(lhs: Int) = div(lhs.toLong())
 
   override fun div(lhs: Long): BigInt {
     TODO("Not yet implemented")
   }
 
-  override fun div(lhs: UByte): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun div(lhs: UShort): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun div(lhs: UInt): BigInt {
-    TODO("Not yet implemented")
-  }
+  override fun div(lhs: UByte) = div(lhs.toULong())
+  override fun div(lhs: UShort) = div(lhs.toULong())
+  override fun div(lhs: UInt) = div(lhs.toULong())
 
   override fun div(lhs: ULong): BigInt {
     TODO("Not yet implemented")
@@ -702,6 +692,8 @@ internal class BigIntImpl(
   override fun div(lhs: BigInt): BigInt {
     TODO("Not yet implemented")
   }
+
+  // endregion Div
 
   override fun rem(lhs: Byte): BigInt {
     TODO("Not yet implemented")
