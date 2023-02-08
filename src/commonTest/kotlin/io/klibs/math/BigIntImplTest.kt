@@ -2,6 +2,8 @@ package io.klibs.math
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
 
 class BigIntImplTest {
 
@@ -9,27 +11,87 @@ class BigIntImplTest {
 
   @Test
   fun toByte_1() {
-    assertEquals(0, bigIntOf("0").toByte())
+    data class test(val expect: Byte, val input: String)
+
+    val tests = arrayOf(
+      test(0, "0"),
+      test(1, "1"),
+      test(127, "127"),
+      test(-1, "-1"),
+      test(-128, "-128")
+    )
+
+    for (test in tests) {
+      assertEquals(test.expect, bigIntOf(test.input).toByte())
+    }
   }
 
   @Test
   fun toByte_2() {
-    assertEquals(-1, bigIntOf("-1").toByte())
+    val tests = arrayOf("-129", "128")
+
+    for (test in tests)
+      assertFailsWith<NumberCastException> { bigIntOf(test).toByte() }
   }
-
-  @Test
-  fun toByte_3() {
-    assertEquals(-10, bigIntOf("-10").toByte())
-  }
-
-  @Test
-  fun toByte_4() {
-    assertEquals(-100, bigIntOf("-100").toByte())
-  }
-
-
 
   // endregion toByte()
+
+  // region toShort()
+
+  @Test
+  fun toShort_1() {
+    data class Test(val expect: Short, val input: String)
+
+    val tests = arrayOf(
+      Test(0, "0"),
+      Test(1, "1"),
+      Test(32767, "32767"),
+      Test(-1, "-1"),
+      Test(-32768, "-32768")
+    )
+
+    for (test in tests) {
+      assertEquals(test.expect, bigIntOf(test.input).toShort())
+    }
+  }
+
+  @Test
+  fun toShort_2() {
+    val tests = arrayOf("-32769", "32768")
+
+    for (test in tests)
+      assertFailsWith<NumberCastException> { bigIntOf(test).toShort() }
+  }
+
+  // endregion toShort()
+
+  // region toInt()
+
+  @Test
+  fun toInt_1() {
+    data class Test(val expect: Int, val input: String)
+
+    val tests = arrayOf(
+      Test(0, "0"),
+      Test(1, "1"),
+      Test(2147483647, "2147483647"),
+      Test(-1, "-1"),
+      Test(-2147483648, "-2147483648")
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, bigIntOf(test.input).toInt())
+  }
+
+  @Test
+  fun toInt_2() {
+    val tests = arrayOf("-2147483649", "2147483648")
+
+    for (test in tests)
+      assertFailsWith<NumberCastException> { bigIntOf(test).toInt() }
+  }
+
+  // endregion toInt()
 
   // region plus(Byte)
 

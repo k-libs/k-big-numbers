@@ -13,7 +13,7 @@ internal class BigIntImpl(
   // region Maintenance
 
   private fun trimToSize() {
-    while (digits.peekFirst() == UBYTE_0)
+    while (digits.isNotEmpty() && digits.peekFirst() == UBYTE_0)
       digits.popFirst()
 
     digits.trimToSize()
@@ -397,43 +397,75 @@ internal class BigIntImpl(
   // region To
 
   override fun toByte(): Byte {
+    if (!fitsByte())
+      throw NumberCastException()
+
     var out: Byte = 0
     digits.peekEach { out = (out * 10 + it.toByte()).toByte() }
     return if (isNegative) (-out).toByte() else out
   }
 
   override fun toShort(): Short {
+    if (!fitsShort())
+      throw NumberCastException()
+
     var out: Short = 0
     digits.peekEach { out = (out * 10 + it.toShort()).toShort() }
     return if (isNegative) (-out).toShort() else out
   }
 
   override fun toInt(): Int {
+    if (!fitsInt())
+      throw NumberCastException()
+
     var out = 0
     digits.peekEach { out = out * 10 + it.toInt() }
-    return out
+    return if (isNegative) -out else out
   }
 
   override fun toLong(): Long {
+    if (!fitsLong())
+      throw NumberCastException()
+
     var out = 0L
     digits.peekEach { out = out * 10 + it.toLong() }
     return if (isNegative) -out else out
   }
 
   override fun toUByte(): UByte {
-    TODO("Not yet implemented")
+    if (!fitsUByte())
+      throw NumberCastException()
+
+    var out: UByte = 0u
+    digits.peekEach { out = (out * 10u + it).toUByte() }
+    return out
   }
 
   override fun toUShort(): UShort {
-    TODO("Not yet implemented")
+    if (!fitsUShort())
+      throw NumberCastException()
+
+    var out: UShort = 0u
+    digits.peekEach { out = (out * 10u + it).toUShort() }
+    return out
   }
 
   override fun toUInt(): UInt {
-    TODO("Not yet implemented")
+    if (!fitsUInt())
+      throw NumberCastException()
+
+    var out = 0u
+    digits.peekEach { out = out * 10u + it }
+    return out
   }
 
   override fun toULong(): ULong {
-    TODO("Not yet implemented")
+    if (!fitsUInt())
+      throw NumberCastException()
+
+    var out = 0uL
+    digits.peekEach { out = out * 10u + it }
+    return out
   }
 
   // endregion To
