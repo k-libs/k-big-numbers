@@ -647,33 +647,17 @@ internal class BigIntImpl(
 
   // endregion Minus
 
-  override fun times(lhs: Byte): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun times(lhs: Short): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun times(lhs: Int): BigInt {
-    TODO("Not yet implemented")
-  }
+  override fun times(lhs: Byte) = times(lhs.toLong())
+  override fun times(lhs: Short) = times(lhs.toLong())
+  override fun times(lhs: Int) = times(lhs.toLong())
 
   override fun times(lhs: Long): BigInt {
     TODO("Not yet implemented")
   }
 
-  override fun times(lhs: UByte): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun times(lhs: UShort): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun times(lhs: UInt): BigInt {
-    TODO("Not yet implemented")
-  }
+  override fun times(lhs: UByte) = times(lhs.toULong())
+  override fun times(lhs: UShort) = times(lhs.toULong())
+  override fun times(lhs: UInt) = times(lhs.toULong())
 
   override fun times(lhs: ULong): BigInt {
     TODO("Not yet implemented")
