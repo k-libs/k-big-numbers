@@ -214,4 +214,15 @@ class BigIntImplTest {
   }
 
   // endregion plus(Long)
+
+  // region minus(Byte)
+
+  @Test
+  fun minus_byte_1() {
+    val tgt = bigIntOf("10")
+
+    println((tgt - 100).toPlainString())
+  }
+
+  // endregion minus(Byte)
 }

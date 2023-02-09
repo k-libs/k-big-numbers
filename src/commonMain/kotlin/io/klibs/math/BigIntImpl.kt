@@ -617,7 +617,7 @@ internal class BigIntImpl(
   }
 
   private fun posMinus(lhs: Long): BigInt {
-    TODO()
+    return posMinus(lhs.toBigInt() as BigIntImpl)
   }
 
   override fun minus(lhs: UByte) = minus(lhs.toULong())
@@ -634,15 +634,49 @@ internal class BigIntImpl(
   }
 
   private fun posMinus(lhs: ULong): BigInt {
-    TODO()
+    return posMinus(lhs.toBigInt() as BigIntImpl)
   }
 
   override fun minus(lhs: BigInt): BigInt {
-    TODO("Not yet implemented")
+    TODO()
   }
 
   private fun posMinus(lhs: BigIntImpl): BigInt {
-    TODO()
+    if (this < lhs)
+      return -lhs.posMinus(this)
+
+    val out = ByteDeque(digits.size)
+    var borrow = false
+    var r: Int
+    var l: Int
+
+    var i = digits.lastIndex
+    var j = lhs.digits.lastIndex
+    while (i >= 0) {
+      r = digits[i].toInt()
+      l = if (j > -1) lhs.digits[j].toInt() else 0
+
+      if (borrow) {
+        r--
+        borrow = false
+      }
+
+      if (l > r) {
+        borrow = true
+        r += 10
+      }
+
+      out.pushFirst((r - l).toByte())
+      i--
+      j--
+    }
+
+    while (out.peekFirst() == BYTE_0)
+      out.popFirst()
+
+    out.trimToSize()
+
+    return BigIntImpl(isNegative, out)
   }
 
   // endregion Minus
@@ -731,7 +765,54 @@ internal class BigIntImpl(
     TODO("Not yet implemented")
   }
 
+  override fun compareTo(lhs: Byte): Int {
+    TODO("Not yet implemented")
+  }
+
+  override fun compareTo(lhs: Short): Int {
+    TODO("Not yet implemented")
+  }
+
+  override fun compareTo(lhs: Int): Int {
+    TODO("Not yet implemented")
+  }
+
+  override fun compareTo(lhs: Long): Int {
+    TODO("Not yet implemented")
+  }
+
+  override fun compareTo(lhs: UByte) = compareTo(lhs.toBigInt())
+  override fun compareTo(lhs: UShort) = compareTo(lhs.toBigInt())
+  override fun compareTo(lhs: UInt) = compareTo(lhs.toBigInt())
+  override fun compareTo(lhs: ULong) = compareTo(lhs.toBigInt())
+
+  override fun compareTo(lhs: BigInt): Int {
+    lhs as BigIntImpl
+
+    if (digits.size > lhs.digits.size)
+      return 1
+    else if (digits.size < lhs.digits.size)
+      return -1
+
+    var i = 0
+    while (i < digits.size) {
+      if (digits[i] > lhs.digits[i])
+        return 1
+      else if (digits[i] < lhs.digits[i])
+        return -1
+      else
+        i++
+    }
+
+    return 0
+  }
+
+  override fun unaryMinus(): BigInt = BigIntImpl(!isNegative, digits)
+
   override fun toPlainString(): String {
+    if (digits.isEmpty())
+      return "0"
+
     val out = if (isNegative)
       StringBuilder(digits.size + 1).append('-')
     else
@@ -744,4 +825,6 @@ internal class BigIntImpl(
 
     return out.toString()
   }
+
+  override fun toString() = toPlainString()
 }

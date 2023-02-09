@@ -29,28 +29,52 @@ internal fun Byte.decStringWidth() =
     else       -> 3
   }
 
-internal fun ULong.decStringWidth() =
+internal fun Short.decStringWidth() =
   when {
-    this > 9999999999999999999uL -> 20
-    this > 999999999999999999uL  -> 19
-    this > 99999999999999999uL   -> 18
-    this > 9999999999999999uL    -> 17
-    this > 999999999999999uL     -> 16
-    this > 99999999999999uL      -> 15
-    this > 9999999999999uL       -> 14
-    this > 999999999999uL        -> 13
-    this > 99999999999uL         -> 12
-    this > 9999999999uL          -> 11
-    this > 999999999uL           -> 10
-    this > 99999999uL            -> 9
-    this > 9999999uL             -> 8
-    this > 999999uL              -> 7
-    this > 99999uL               -> 6
-    this > 9999uL                -> 5
-    this > 999uL                 -> 4
-    this > 99uL                  -> 3
-    this > 9uL                   -> 2
-    else                         -> 1
+    this < 0 -> when {
+      this < -9999 -> 6
+      this < -999  -> 5
+      this < -99   -> 4
+      this < -9    -> 3
+      else         -> 2
+    }
+
+    else     -> when {
+      this > 9999 -> 5
+      this > 999  -> 4
+      this > 99   -> 3
+      this > 9    -> 2
+      else        -> 1
+    }
+  }
+
+internal fun Int.decStringWidth() =
+  when {
+    this < 0 -> when {
+      this < -999999999 -> 11
+      this < -99999999  -> 10
+      this < -9999999   -> 9
+      this < -999999    -> 8
+      this < -99999     -> 7
+      this < -9999      -> 6
+      this < -999       -> 5
+      this < -99        -> 4
+      this < -9         -> 3
+      else              -> 2
+    }
+
+    else     -> when {
+      this > 999999999 -> 10
+      this > 99999999  -> 9
+      this > 9999999   -> 8
+      this > 999999    -> 7
+      this > 99999     -> 6
+      this > 9999      -> 5
+      this > 999       -> 4
+      this > 99        -> 3
+      this > 9         -> 2
+      else             -> 1
+    }
   }
 
 internal fun Long.decStringWidth() =
@@ -98,4 +122,58 @@ internal fun Long.decStringWidth() =
       this < 1000000000000000000L -> 18
       else                        -> 19
     }
+  }
+
+internal fun UByte.decStringWidth() =
+  when {
+    this > 99u -> 3
+    this > 9u  -> 2
+    else       -> 1
+  }
+
+internal fun UShort.decStringWidth() =
+  when {
+    this > 9999u -> 5
+    this > 999u  -> 4
+    this > 99u   -> 3
+    this > 9u    -> 2
+    else         -> 1
+  }
+
+internal fun UInt.decStringWidth() =
+  when {
+    this > 999999999u -> 10
+    this > 99999999u  -> 9
+    this > 9999999u   -> 8
+    this > 999999u    -> 7
+    this > 99999u     -> 6
+    this > 9999u      -> 5
+    this > 999u       -> 4
+    this > 99u        -> 3
+    this > 9u         -> 2
+    else              -> 1
+  }
+
+internal fun ULong.decStringWidth() =
+  when {
+    this > 9999999999999999999uL -> 20
+    this > 999999999999999999uL  -> 19
+    this > 99999999999999999uL   -> 18
+    this > 9999999999999999uL    -> 17
+    this > 999999999999999uL     -> 16
+    this > 99999999999999uL      -> 15
+    this > 9999999999999uL       -> 14
+    this > 999999999999uL        -> 13
+    this > 99999999999uL         -> 12
+    this > 9999999999uL          -> 11
+    this > 999999999uL           -> 10
+    this > 99999999uL            -> 9
+    this > 9999999uL             -> 8
+    this > 999999uL              -> 7
+    this > 99999uL               -> 6
+    this > 9999uL                -> 5
+    this > 999uL                 -> 4
+    this > 99uL                  -> 3
+    this > 9uL                   -> 2
+    else                         -> 1
   }

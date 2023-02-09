@@ -116,6 +116,18 @@ sealed interface BigInt {
   operator fun rem(lhs: ULong): BigInt
   operator fun rem(lhs: BigInt): BigInt
 
+  operator fun compareTo(lhs: Byte): Int
+  operator fun compareTo(lhs: Short): Int
+  operator fun compareTo(lhs: Int): Int
+  operator fun compareTo(lhs: Long): Int
+  operator fun compareTo(lhs: UByte): Int
+  operator fun compareTo(lhs: UShort): Int
+  operator fun compareTo(lhs: UInt): Int
+  operator fun compareTo(lhs: ULong): Int
+  operator fun compareTo(lhs: BigInt): Int
+
+  operator fun unaryMinus(): BigInt
+
   fun toPlainString(): String
 }
 
