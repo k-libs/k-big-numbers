@@ -1,15 +1,15 @@
 package io.klibs.math
 
-internal const val UBYTE_0: UByte = 0u
-internal const val UBYTE_1: UByte = 1u
-internal const val UBYTE_2: UByte = 2u
-internal const val UBYTE_3: UByte = 3u
-internal const val UBYTE_4: UByte = 4u
-internal const val UBYTE_5: UByte = 5u
-internal const val UBYTE_6: UByte = 6u
-internal const val UBYTE_7: UByte = 7u
-internal const val UBYTE_8: UByte = 8u
-internal const val UBYTE_9: UByte = 9u
+internal const val BYTE_0: Byte = 0
+internal const val BYTE_1: Byte = 1
+internal const val BYTE_2: Byte = 2
+internal const val BYTE_3: Byte = 3
+internal const val BYTE_4: Byte = 4
+internal const val BYTE_5: Byte = 5
+internal const val BYTE_6: Byte = 6
+internal const val BYTE_7: Byte = 7
+internal const val BYTE_8: Byte = 8
+internal const val BYTE_9: Byte = 9
 
 internal const val B_ASCII_ZERO: Byte = 48
 internal const val U_ASCII_ZERO: UByte = 48u

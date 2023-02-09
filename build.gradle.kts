@@ -48,7 +48,7 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        implementation("io.k-libs:deque:0.6.2")
+        implementation("io.k-libs:deque:0.7.0")
       }
     }
     val commonTest by getting {

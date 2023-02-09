@@ -1,6 +1,6 @@
 package io.klibs.math
 
-import io.klibs.collections.UByteDeque
+import io.klibs.collections.ByteDeque
 
 fun bigIntOf(string: String): BigInt {
   if (string.isEmpty())
@@ -10,7 +10,7 @@ fun bigIntOf(string: String): BigInt {
 }
 
 private fun bigIntOfBase10(string: String): BigInt {
-  val digits = UByteDeque(string.length)
+  val digits = ByteDeque(string.length)
   var started = false
   var negative = false
   var i = 0
@@ -30,7 +30,7 @@ private fun bigIntOfBase10(string: String): BigInt {
       continue
 
     started = true
-    digits.pushLast((c.code.toUByte() - U_ASCII_ZERO).toUByte())
+    digits.pushLast((c.code.toByte() - B_ASCII_ZERO).toByte())
   }
 
   digits.trimToSize()

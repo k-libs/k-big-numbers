@@ -1,10 +1,10 @@
 package io.klibs.math
 
-import io.klibs.collections.UByteDeque
+import io.klibs.collections.ByteDeque
 
 internal class BigIntImpl(
   override val isNegative: Boolean,
-  private val digits: UByteDeque,
+  private val digits: ByteDeque,
 ) : BigInt {
 
   override val isPositive: Boolean
@@ -13,7 +13,7 @@ internal class BigIntImpl(
   // region Maintenance
 
   private fun trimToSize() {
-    while (digits.isNotEmpty() && digits.peekFirst() == UBYTE_0)
+    while (digits.isNotEmpty() && digits.peekFirst() == BYTE_0)
       digits.popFirst()
 
     digits.trimToSize()
@@ -32,16 +32,16 @@ internal class BigIntImpl(
       return true
     if (digits.size > 3)
       return false
-    if (digits[0] > UBYTE_1)
+    if (digits[0] > BYTE_1)
       return false
-    if (digits[1] > UBYTE_2)
+    if (digits[1] > BYTE_2)
       return false
-    if (digits[1] == UBYTE_2) {
+    if (digits[1] == BYTE_2) {
       if (isNegative) {
-        if (digits[2] > UBYTE_8)
+        if (digits[2] > BYTE_8)
           return false
       } else {
-        if (digits[2] > UBYTE_7)
+        if (digits[2] > BYTE_7)
           return false
       }
     }
@@ -56,26 +56,26 @@ internal class BigIntImpl(
       true
     else if (digits.size > 5)
       false
-    else if (digits[0] > UBYTE_3)
+    else if (digits[0] > BYTE_3)
       false
-    else if (digits[0] < UBYTE_3)
+    else if (digits[0] < BYTE_3)
       true
-    else if (digits[1] > UBYTE_2)
+    else if (digits[1] > BYTE_2)
       false
-    else if (digits[1] < UBYTE_2)
+    else if (digits[1] < BYTE_2)
       true
-    else if (digits[2] > UBYTE_7)
+    else if (digits[2] > BYTE_7)
       false
-    else if (digits[2] < UBYTE_7)
+    else if (digits[2] < BYTE_7)
       true
-    else if (digits[3] > UBYTE_6)
+    else if (digits[3] > BYTE_6)
       false
-    else if (digits[3] < UBYTE_6)
+    else if (digits[3] < BYTE_6)
       true
     else if (isNegative)
-      digits[4] <= UBYTE_8
+      digits[4] <= BYTE_8
     else
-      digits[4] <= UBYTE_7
+      digits[4] <= BYTE_7
   }
 
   override fun fitsInt(): Boolean {
@@ -85,46 +85,46 @@ internal class BigIntImpl(
       true
     else if (digits.size > 10)
       false
-    else if (digits[0] > UBYTE_2)
+    else if (digits[0] > BYTE_2)
       false
-    else if (digits[0] < UBYTE_2)
+    else if (digits[0] < BYTE_2)
       true
-    else if (digits[1] > UBYTE_1)
+    else if (digits[1] > BYTE_1)
       false
-    else if (digits[1] < UBYTE_1)
+    else if (digits[1] < BYTE_1)
       true
-    else if (digits[2] > UBYTE_4)
+    else if (digits[2] > BYTE_4)
       false
-    else if (digits[2] < UBYTE_4)
+    else if (digits[2] < BYTE_4)
       true
-    else if (digits[3] > UBYTE_7)
+    else if (digits[3] > BYTE_7)
       false
-    else if (digits[3] < UBYTE_7)
+    else if (digits[3] < BYTE_7)
       true
-    else if (digits[4] > UBYTE_4)
+    else if (digits[4] > BYTE_4)
       false
-    else if (digits[4] < UBYTE_4)
+    else if (digits[4] < BYTE_4)
       true
-    else if (digits[5] > UBYTE_8)
+    else if (digits[5] > BYTE_8)
       false
-    else if (digits[5] < UBYTE_8)
+    else if (digits[5] < BYTE_8)
       true
-    else if (digits[6] > UBYTE_3)
+    else if (digits[6] > BYTE_3)
       false
-    else if (digits[6] < UBYTE_3)
+    else if (digits[6] < BYTE_3)
       true
-    else if (digits[7] > UBYTE_6)
+    else if (digits[7] > BYTE_6)
       false
-    else if (digits[7] < UBYTE_6)
+    else if (digits[7] < BYTE_6)
       true
-    else if (digits[8] > UBYTE_4)
+    else if (digits[8] > BYTE_4)
       false
-    else if (digits[8] < UBYTE_4)
+    else if (digits[8] < BYTE_4)
       true
     else if (isNegative)
-      digits[9] <= UBYTE_8
+      digits[9] <= BYTE_8
     else
-      digits[9] <= UBYTE_7
+      digits[9] <= BYTE_7
   }
 
   override fun fitsLong(): Boolean {
@@ -134,76 +134,76 @@ internal class BigIntImpl(
       false
     else if (digits.size < 19)
       true
-    else if (digits[0] < UBYTE_9)
+    else if (digits[0] < BYTE_9)
       true
-    else if (digits[1] > UBYTE_2)
+    else if (digits[1] > BYTE_2)
       false
-    else if (digits[1] < UBYTE_2)
+    else if (digits[1] < BYTE_2)
       true
-    else if (digits[2] > UBYTE_2)
+    else if (digits[2] > BYTE_2)
       false
-    else if (digits[2] < UBYTE_2)
+    else if (digits[2] < BYTE_2)
       true
-    else if (digits[3] > UBYTE_3)
+    else if (digits[3] > BYTE_3)
       false
-    else if (digits[3] < UBYTE_3)
+    else if (digits[3] < BYTE_3)
       true
-    else if (digits[4] > UBYTE_3)
+    else if (digits[4] > BYTE_3)
       false
-    else if (digits[4] < UBYTE_3)
+    else if (digits[4] < BYTE_3)
       true
-    else if (digits[5] > UBYTE_7)
+    else if (digits[5] > BYTE_7)
       false
-    else if (digits[5] < UBYTE_7)
+    else if (digits[5] < BYTE_7)
       true
-    else if (digits[6] > UBYTE_2)
+    else if (digits[6] > BYTE_2)
       false
-    else if (digits[6] < UBYTE_2)
+    else if (digits[6] < BYTE_2)
       true
-    else if (digits[7] > UBYTE_0)
+    else if (digits[7] > BYTE_0)
       false
-    else if (digits[8] > UBYTE_3)
+    else if (digits[8] > BYTE_3)
       false
-    else if (digits[8] < UBYTE_3)
+    else if (digits[8] < BYTE_3)
       true
-    else if (digits[9] > UBYTE_6)
+    else if (digits[9] > BYTE_6)
       false
-    else if (digits[9] < UBYTE_6)
+    else if (digits[9] < BYTE_6)
       true
-    else if (digits[10] > UBYTE_8)
+    else if (digits[10] > BYTE_8)
       false
-    else if (digits[10] < UBYTE_8)
+    else if (digits[10] < BYTE_8)
       true
-    else if (digits[11] > UBYTE_5)
+    else if (digits[11] > BYTE_5)
       false
-    else if (digits[11] < UBYTE_5)
+    else if (digits[11] < BYTE_5)
       true
-    else if (digits[12] > UBYTE_4)
+    else if (digits[12] > BYTE_4)
       false
-    else if (digits[12] < UBYTE_4)
+    else if (digits[12] < BYTE_4)
       true
-    else if (digits[13] > UBYTE_7)
+    else if (digits[13] > BYTE_7)
       false
-    else if (digits[13] < UBYTE_7)
+    else if (digits[13] < BYTE_7)
       true
-    else if (digits[14] > UBYTE_7)
+    else if (digits[14] > BYTE_7)
       false
-    else if (digits[14] < UBYTE_7)
+    else if (digits[14] < BYTE_7)
       true
-    else if (digits[15] > UBYTE_5)
+    else if (digits[15] > BYTE_5)
       false
-    else if (digits[15] < UBYTE_5)
+    else if (digits[15] < BYTE_5)
       true
-    else if (digits[16] > UBYTE_8)
+    else if (digits[16] > BYTE_8)
       false
-    else if (digits[16] < UBYTE_8)
+    else if (digits[16] < BYTE_8)
       true
-    else if (digits[17] > UBYTE_0)
+    else if (digits[17] > BYTE_0)
       false
     else if (isNegative)
-      digits[18] <= UBYTE_8
+      digits[18] <= BYTE_8
     else
-      digits[18] <= UBYTE_7
+      digits[18] <= BYTE_7
   }
 
   // endregion Fits Signed
@@ -220,16 +220,16 @@ internal class BigIntImpl(
       false
     else if (digits.size < 3)
       true
-    else if (digits[0] > UBYTE_2)
+    else if (digits[0] > BYTE_2)
       false
-    else if (digits[0] < UBYTE_2)
+    else if (digits[0] < BYTE_2)
       true
-    else if (digits[1] > UBYTE_5)
+    else if (digits[1] > BYTE_5)
       false
-    else if (digits[1] < UBYTE_5)
+    else if (digits[1] < BYTE_5)
       true
     else
-      digits[2] <= UBYTE_5
+      digits[2] <= BYTE_5
   }
 
   override fun fitsUShort(): Boolean {
@@ -242,24 +242,24 @@ internal class BigIntImpl(
       false
     else if (digits.size < 5)
       true
-    else if (digits[0] > UBYTE_6)
+    else if (digits[0] > BYTE_6)
       false
-    else if (digits[0] > UBYTE_6)
+    else if (digits[0] > BYTE_6)
       true
-    else if (digits[1] > UBYTE_5)
+    else if (digits[1] > BYTE_5)
       false
-    else if (digits[1] > UBYTE_5)
+    else if (digits[1] > BYTE_5)
       true
-    else if (digits[2] > UBYTE_5)
+    else if (digits[2] > BYTE_5)
       false
-    else if (digits[2] > UBYTE_5)
+    else if (digits[2] > BYTE_5)
       true
-    else if (digits[3] > UBYTE_3)
+    else if (digits[3] > BYTE_3)
       false
-    else if (digits[3] > UBYTE_3)
+    else if (digits[3] > BYTE_3)
       true
     else
-      digits[4] <= UBYTE_5
+      digits[4] <= BYTE_5
   }
 
   override fun fitsUInt(): Boolean {
@@ -272,38 +272,38 @@ internal class BigIntImpl(
       false
     else if (digits.size < 10)
       true
-    else if (digits[0] > UBYTE_4)
+    else if (digits[0] > BYTE_4)
       false
-    else if (digits[0] < UBYTE_4)
+    else if (digits[0] < BYTE_4)
       true
-    else if (digits[1] > UBYTE_2)
+    else if (digits[1] > BYTE_2)
       false
-    else if (digits[1] < UBYTE_2)
+    else if (digits[1] < BYTE_2)
       true
-    else if (digits[2] < UBYTE_9)
+    else if (digits[2] < BYTE_9)
       true
-    else if (digits[3] > UBYTE_4)
+    else if (digits[3] > BYTE_4)
       false
-    else if (digits[3] < UBYTE_4)
+    else if (digits[3] < BYTE_4)
       true
-    else if (digits[4] < UBYTE_9)
+    else if (digits[4] < BYTE_9)
       true
-    else if (digits[5] > UBYTE_6)
+    else if (digits[5] > BYTE_6)
       false
-    else if (digits[5] < UBYTE_6)
+    else if (digits[5] < BYTE_6)
       true
-    else if (digits[6] > UBYTE_7)
+    else if (digits[6] > BYTE_7)
       false
-    else if (digits[6] < UBYTE_7)
+    else if (digits[6] < BYTE_7)
       true
-    else if (digits[7] > UBYTE_2)
+    else if (digits[7] > BYTE_2)
       false
-    else if (digits[7] < UBYTE_2)
+    else if (digits[7] < BYTE_2)
       true
-    else if (digits[8] < UBYTE_9)
+    else if (digits[8] < BYTE_9)
       true
     else
-      digits[9] <= UBYTE_5
+      digits[9] <= BYTE_5
   }
 
   override fun fitsULong(): Boolean {
@@ -316,78 +316,78 @@ internal class BigIntImpl(
       false
     else if (digits.size < 20)
       true
-    else if (digits[0] > UBYTE_1)
+    else if (digits[0] > BYTE_1)
       false
-    else if (digits[0] < UBYTE_1)
+    else if (digits[0] < BYTE_1)
       true
-    else if (digits[1] > UBYTE_8)
+    else if (digits[1] > BYTE_8)
       false
-    else if (digits[1] < UBYTE_8)
+    else if (digits[1] < BYTE_8)
       true
-    else if (digits[2] > UBYTE_4)
+    else if (digits[2] > BYTE_4)
       false
-    else if (digits[2] < UBYTE_4)
+    else if (digits[2] < BYTE_4)
       true
-    else if (digits[3] > UBYTE_4)
+    else if (digits[3] > BYTE_4)
       false
-    else if (digits[3] < UBYTE_4)
+    else if (digits[3] < BYTE_4)
       true
-    else if (digits[4] > UBYTE_6)
+    else if (digits[4] > BYTE_6)
       false
-    else if (digits[4] < UBYTE_6)
+    else if (digits[4] < BYTE_6)
       true
-    else if (digits[5] > UBYTE_7)
+    else if (digits[5] > BYTE_7)
       false
-    else if (digits[5] < UBYTE_7)
+    else if (digits[5] < BYTE_7)
       true
-    else if (digits[6] > UBYTE_4)
+    else if (digits[6] > BYTE_4)
       false
-    else if (digits[6] < UBYTE_4)
+    else if (digits[6] < BYTE_4)
       true
-    else if (digits[7] > UBYTE_4)
+    else if (digits[7] > BYTE_4)
       false
-    else if (digits[7] < UBYTE_4)
+    else if (digits[7] < BYTE_4)
       true
-    else if (digits[8] > UBYTE_0)
+    else if (digits[8] > BYTE_0)
       false
-    else if (digits[9] > UBYTE_7)
+    else if (digits[9] > BYTE_7)
       false
-    else if (digits[9] < UBYTE_7)
+    else if (digits[9] < BYTE_7)
       true
-    else if (digits[10] > UBYTE_3)
+    else if (digits[10] > BYTE_3)
       false
-    else if (digits[10] < UBYTE_3)
+    else if (digits[10] < BYTE_3)
       true
-    else if (digits[11] > UBYTE_7)
+    else if (digits[11] > BYTE_7)
       false
-    else if (digits[11] < UBYTE_7)
+    else if (digits[11] < BYTE_7)
       true
-    else if (digits[12] > UBYTE_0)
+    else if (digits[12] > BYTE_0)
       false
-    else if (digits[13] < UBYTE_9)
+    else if (digits[13] < BYTE_9)
       true
-    else if (digits[14] > UBYTE_5)
+    else if (digits[14] > BYTE_5)
       false
-    else if (digits[14] < UBYTE_5)
+    else if (digits[14] < BYTE_5)
       true
-    else if (digits[15] > UBYTE_5)
+    else if (digits[15] > BYTE_5)
       false
-    else if (digits[15] < UBYTE_5)
+    else if (digits[15] < BYTE_5)
       true
-    else if (digits[16] > UBYTE_1)
+    else if (digits[16] > BYTE_1)
       false
-    else if (digits[16] < UBYTE_1)
+    else if (digits[16] < BYTE_1)
       true
-    else if (digits[17] > UBYTE_6)
+    else if (digits[17] > BYTE_6)
       false
-    else if (digits[17] < UBYTE_6)
+    else if (digits[17] < BYTE_6)
       true
-    else if (digits[18] > UBYTE_1)
+    else if (digits[18] > BYTE_1)
       false
-    else if (digits[18] < UBYTE_1)
+    else if (digits[18] < BYTE_1)
       true
     else
-      digits[19] <= UBYTE_5
+      digits[19] <= BYTE_5
   }
 
   // endregion Fits Unsigned
@@ -437,7 +437,7 @@ internal class BigIntImpl(
       throw NumberCastException()
 
     var out: UByte = 0u
-    digits.peekEach { out = (out * 10u + it).toUByte() }
+    digits.peekEach { out = (out * 10u + it.toUByte()).toUByte() }
     return out
   }
 
@@ -446,7 +446,7 @@ internal class BigIntImpl(
       throw NumberCastException()
 
     var out: UShort = 0u
-    digits.peekEach { out = (out * 10u + it).toUShort() }
+    digits.peekEach { out = (out * 10u + it.toUShort()).toUShort() }
     return out
   }
 
@@ -455,7 +455,7 @@ internal class BigIntImpl(
       throw NumberCastException()
 
     var out = 0u
-    digits.peekEach { out = out * 10u + it }
+    digits.peekEach { out = out * 10u + it.toUInt() }
     return out
   }
 
@@ -464,7 +464,7 @@ internal class BigIntImpl(
       throw NumberCastException()
 
     var out = 0uL
-    digits.peekEach { out = out * 10u + it }
+    digits.peekEach { out = out * 10u + it.toULong() }
     return out
   }
 
@@ -493,26 +493,26 @@ internal class BigIntImpl(
   }
 
   private fun posPlus(lhs: Long): BigInt {
-    val out = UByteDeque(digits.size)
+    val out = ByteDeque(digits.size)
     var rem = lhs
 
     var i = digits.lastIndex
     while (i >= 0) {
-      var sum = digits[i--] + (rem % 10).toUByte()
+      var sum = digits[i--] + (rem % 10).toByte()
       rem /= 10
 
-      if (sum >= 10u) {
+      if (sum >= 10) {
         rem++
-        sum -= 10u
+        sum -= 10
       }
 
-      out.pushFirst(sum.toUByte())
+      out.pushFirst(sum.toByte())
     }
 
     out.ensureCapacity(out.size + rem.decStringWidth())
 
     while (rem > 0) {
-      val digitToAdd = (rem % 10).toUByte()
+      val digitToAdd = (rem % 10).toByte()
       out.pushFirst(digitToAdd)
       rem /= 10
     }
@@ -536,26 +536,26 @@ internal class BigIntImpl(
   }
 
   private fun posPlus(lhs: ULong): BigInt {
-    val out = UByteDeque(digits.size)
+    val out = ByteDeque(digits.size)
     var rem = lhs
 
     var i = digits.lastIndex
     while (i >= 0) {
-      var sum = digits[i--] + (rem % 10u).toUByte()
+      var sum = digits[i--] + (rem % 10u).toByte()
       rem /= 10u
 
-      if (sum >= 10u) {
+      if (sum >= 10) {
         rem++
-        sum -= 10u
+        sum -= 10
       }
 
-      out.pushFirst(sum.toUByte())
+      out.pushFirst(sum.toByte())
     }
 
     out.ensureCapacity(out.size + rem.decStringWidth())
 
     while (rem > 0u) {
-      val digitToAdd = (rem % 10u).toUByte()
+      val digitToAdd = (rem % 10u).toByte()
       out.pushFirst(digitToAdd)
       rem /= 10u
     }
@@ -573,19 +573,19 @@ internal class BigIntImpl(
   }
 
   private fun posPlus(lhs: BigIntImpl): BigInt {
-    val out = UByteDeque(max(lhs.digits.size, digits.size))
+    val out = ByteDeque(max(lhs.digits.size, digits.size))
 
-    var sum: UInt
-    var car = 0u
+    var sum: Int
+    var car = 0
 
     for (i in out.capacity downTo 1) {
       sum = (digits.getOrZero(i) + lhs.digits.getOrZero(i)) + car
-      car = sum / 10u
-      out.pushFirst((sum % 10u).toUByte())
+      car = sum / 10
+      out.pushFirst((sum % 10).toByte())
     }
 
-    if (car > 0u)
-      out.pushFirst(car.toUByte())
+    if (car > 0)
+      out.pushFirst(car.toByte())
 
     out.trimToSize()
 
