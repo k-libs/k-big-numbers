@@ -13,6 +13,9 @@ internal class BigIntImpl(
   override val isPositive: Boolean
     get() = !negative && digits.isNotEmpty()
 
+  override val isZero: Boolean
+    get() = digits.isEmpty()
+
   // region Maintenance
 
   private fun trimToSize() {
@@ -686,23 +689,18 @@ internal class BigIntImpl(
 
   // region Times
 
-  override fun times(lhs: Byte) = times(lhs.toLong())
-  override fun times(lhs: Short) = times(lhs.toLong())
-  override fun times(lhs: Int) = times(lhs.toLong())
-
-  override fun times(lhs: Long): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun times(lhs: UByte) = times(lhs.toULong())
-  override fun times(lhs: UShort) = times(lhs.toULong())
-  override fun times(lhs: UInt) = times(lhs.toULong())
-
-  override fun times(lhs: ULong): BigInt {
-    TODO("Not yet implemented")
-  }
-
+  override fun times(lhs: Byte) = times(lhs.toBigInt())
+  override fun times(lhs: Short) = times(lhs.toBigInt())
+  override fun times(lhs: Int) = times(lhs.toBigInt())
+  override fun times(lhs: Long) = times(lhs.toBigInt())
+  override fun times(lhs: UByte) = times(lhs.toBigInt())
+  override fun times(lhs: UShort) = times(lhs.toBigInt())
+  override fun times(lhs: UInt) = times(lhs.toBigInt())
+  override fun times(lhs: ULong) = times(lhs.toBigInt())
   override fun times(lhs: BigInt): BigInt {
+    if (isZero || lhs.isZero)
+      return BigInt.Zero
+
     TODO("Not yet implemented")
   }
 
@@ -710,21 +708,14 @@ internal class BigIntImpl(
 
   // region Div
 
-  override fun div(lhs: Byte) = div(lhs.toLong())
-  override fun div(lhs: Short) = div(lhs.toLong())
-  override fun div(lhs: Int) = div(lhs.toLong())
-
-  override fun div(lhs: Long): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun div(lhs: UByte) = div(lhs.toULong())
-  override fun div(lhs: UShort) = div(lhs.toULong())
-  override fun div(lhs: UInt) = div(lhs.toULong())
-
-  override fun div(lhs: ULong): BigInt {
-    TODO("Not yet implemented")
-  }
+  override fun div(lhs: Byte) = div(lhs.toBigInt())
+  override fun div(lhs: Short) = div(lhs.toBigInt())
+  override fun div(lhs: Int) = div(lhs.toBigInt())
+  override fun div(lhs: Long) = div(lhs.toBigInt())
+  override fun div(lhs: UByte) = div(lhs.toBigInt())
+  override fun div(lhs: UShort) = div(lhs.toBigInt())
+  override fun div(lhs: UInt) = div(lhs.toBigInt())
+  override fun div(lhs: ULong) = div(lhs.toBigInt())
 
   override fun div(lhs: BigInt): BigInt {
     TODO("Not yet implemented")
@@ -768,22 +759,10 @@ internal class BigIntImpl(
     TODO("Not yet implemented")
   }
 
-  override fun compareTo(lhs: Byte): Int {
-    TODO("Not yet implemented")
-  }
-
-  override fun compareTo(lhs: Short): Int {
-    TODO("Not yet implemented")
-  }
-
-  override fun compareTo(lhs: Int): Int {
-    TODO("Not yet implemented")
-  }
-
-  override fun compareTo(lhs: Long): Int {
-    TODO("Not yet implemented")
-  }
-
+  override fun compareTo(lhs: Byte) = compareTo(lhs.toBigInt())
+  override fun compareTo(lhs: Short) = compareTo(lhs.toBigInt())
+  override fun compareTo(lhs: Int) = compareTo(lhs.toBigInt())
+  override fun compareTo(lhs: Long) = compareTo(lhs.toBigInt())
   override fun compareTo(lhs: UByte) = compareTo(lhs.toBigInt())
   override fun compareTo(lhs: UShort) = compareTo(lhs.toBigInt())
   override fun compareTo(lhs: UInt) = compareTo(lhs.toBigInt())
@@ -811,6 +790,26 @@ internal class BigIntImpl(
   }
 
   override fun unaryMinus(): BigInt = BigIntImpl(!isNegative, digits)
+
+  override fun equals(other: Any?): Boolean {
+    if (other === this)
+      return true
+
+    if (other is BigIntImpl)
+      return digits.contentEquals(other.digits)
+
+    return when (other) {
+      is Int    -> other.toBigInt() == this
+      is Long   -> other.toBigInt() == this
+      is UInt   -> other.toBigInt() == this
+      is ULong  -> other.toBigInt() == this
+      is Byte   -> other.toBigInt() == this
+      is UByte  -> other.toBigInt() == this
+      is Short  -> other.toBigInt() == this
+      is UShort -> other.toBigInt() == this
+      else      -> false
+    }
+  }
 
   override fun toPlainString(): String {
     if (digits.isEmpty())

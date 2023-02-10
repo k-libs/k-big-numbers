@@ -1,8 +1,11 @@
 package io.klibs.math
 
+import io.klibs.collections.ByteDeque
+
 sealed interface BigInt {
   val isNegative: Boolean
   val isPositive: Boolean
+  val isZero:     Boolean
 
   /**
    * Tests whether the value of this [BigInt] could fit into a [Byte] without
@@ -129,5 +132,9 @@ sealed interface BigInt {
   operator fun unaryMinus(): BigInt
 
   fun toPlainString(): String
+
+  companion object {
+    val Zero: BigInt = BigIntImpl(false, ByteDeque(0))
+  }
 }
 
