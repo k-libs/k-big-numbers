@@ -702,7 +702,9 @@ internal open class BigIntImpl(
     if (isZero || lhs.isZero)
       return BigInt.Zero
 
-    TODO("Not yet implemented")
+    lhs as BigIntImpl
+
+    return BigIntImpl(negative != lhs.negative, multiply(this.digits, lhs.digits))
   }
 
   // endregion Times
@@ -730,7 +732,7 @@ internal open class BigIntImpl(
   }
 
   private fun divide(lhs: BigIntImpl): BigInt {
-
+    TODO()
   }
 
   // endregion Div
@@ -826,4 +828,49 @@ internal open class BigIntImpl(
   }
 
   override fun toString() = toPlainString()
+}
+
+private fun multiply(a: ByteDeque, b: ByteDeque): ByteDeque {
+  val o = ByteDeque(a.size + b.size)
+  var c = 0
+  var s: Int
+  var p: Int
+
+  for (i in 0 .. a.lastIndex) {
+    for (j in 0 .. b.lastIndex) {
+      p = i + j
+
+      if (p < o.size) {
+        o[p] = (o[p] + a[i] * b[j]).toByte()
+      } else {
+        while (p > o.size) {
+          o.pushLast(0)
+        }
+
+        o.pushLast((a[i] * b[j]).toByte())
+      }
+    }
+  }
+
+  for (i in o.lastIndex downTo 0) {
+    s = c + o[i]
+    o[i] = (s % 10).toByte()
+    c = s / 10
+  }
+
+  while (c > 0) {
+    o.pushFirst((c % 10).toByte())
+    c /= 10
+  }
+
+  trimToSize(o)
+
+  return o
+}
+
+private fun trimToSize(a: ByteDeque) {
+  while (a.size > 0 && a.peekFirst() == BYTE_0)
+    a.popFirst()
+
+  a.trimToSize()
 }

@@ -225,4 +225,34 @@ class BigIntImplTest {
   }
 
   // endregion minus(Byte)
+
+  // region times()
+
+  // region times(Byte)
+
+  @Test
+  fun times_byte_1() {
+    data class Test(val a: Byte, val b: Byte, val expect: String)
+
+    val tests = arrayOf(
+      Test(0, 0, "0"),             // 0
+      Test(0, 1, "0"),             // 1
+      Test(1, 0, "0"),             // 2
+      Test(1, 1, "1"),             // 3
+      Test(1, -1, "-1"),           // 4
+      Test(-1, 1, "-1"),           // 5
+      Test(-1, -1, "1"),           // 6
+      Test(1, 127, "127"),         // 7
+      Test(1, -128, "-128"),        // 8
+      Test(127, -128, "-16256")    // 9
+    )
+
+    tests.forEachIndexed { i, test ->
+      assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
+    }
+  }
+
+  // endregion times(Byte)
+
+  // endregion times()
 }

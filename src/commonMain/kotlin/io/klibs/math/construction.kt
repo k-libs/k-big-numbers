@@ -5,7 +5,8 @@ import io.klibs.collections.ByteDeque
 
 fun bigIntOf(value: Byte): BigInt {
   val out = ByteDeque(value.decStringWidth())
-  var rem = value.toInt()
+  val neg = value < 0
+  var rem = (if (neg) -value else value).toInt()
 
   while (rem > 0) {
     out.pushFirst((rem % 10).toByte())
@@ -14,12 +15,13 @@ fun bigIntOf(value: Byte): BigInt {
 
   out.trimToSize()
 
-  return BigIntImpl(false, out)
+  return BigIntImpl(neg, out)
 }
 
 fun bigIntOf(value: Short): BigInt {
   val out = ByteDeque(value.decStringWidth())
-  var rem = value.toInt()
+  val neg = value < 0
+  var rem = (if (neg) -value else value).toInt()
 
   while (rem > 0) {
     out.pushFirst((rem % 10).toByte())
@@ -28,12 +30,13 @@ fun bigIntOf(value: Short): BigInt {
 
   out.trimToSize()
 
-  return BigIntImpl(false, out)
+  return BigIntImpl(neg, out)
 }
 
 fun bigIntOf(value: Int): BigInt {
   val out = ByteDeque(value.decStringWidth())
-  var rem = value
+  val neg = value < 0
+  var rem = if (neg) -value else value
 
   while (rem > 0) {
     out.pushFirst((rem % 10).toByte())
@@ -42,12 +45,13 @@ fun bigIntOf(value: Int): BigInt {
 
   out.trimToSize()
 
-  return BigIntImpl(false, out)
+  return BigIntImpl(neg, out)
 }
 
 fun bigIntOf(value: Long): BigInt {
   val out = ByteDeque(value.decStringWidth())
-  var rem = value
+  val neg = value < 0
+  var rem = if (neg) -value else value
 
   while (rem > 0) {
     out.pushFirst((rem % 10).toByte())
@@ -56,7 +60,7 @@ fun bigIntOf(value: Long): BigInt {
 
   out.trimToSize()
 
-  return BigIntImpl(false, out)
+  return BigIntImpl(neg, out)
 }
 
 fun bigIntOf(value: UByte): BigInt {
