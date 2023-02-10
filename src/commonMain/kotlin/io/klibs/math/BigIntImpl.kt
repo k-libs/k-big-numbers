@@ -1,6 +1,7 @@
 package io.klibs.math
 
 import io.klibs.collections.ByteDeque
+import io.klibs.collections.byteDequeOf
 
 internal open class BigIntImpl(
   private var negative: Boolean,
@@ -718,44 +719,32 @@ internal open class BigIntImpl(
   override fun div(lhs: ULong) = div(lhs.toBigInt())
 
   override fun div(lhs: BigInt): BigInt {
-    TODO("Not yet implemented")
+    if (isZero || this < lhs)
+      return BigInt.Zero
+    if (lhs.isZero)
+      TODO("division by zero exception")
+    if (this == lhs)
+      return BigIntImpl(false, byteDequeOf(1))
+
+    return divide(lhs as BigIntImpl)
+  }
+
+  private fun divide(lhs: BigIntImpl): BigInt {
+
   }
 
   // endregion Div
 
   // region Rem
 
-  override fun rem(lhs: Byte): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun rem(lhs: Short): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun rem(lhs: Int): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun rem(lhs: Long): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun rem(lhs: UByte): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun rem(lhs: UShort): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun rem(lhs: UInt): BigInt {
-    TODO("Not yet implemented")
-  }
-
-  override fun rem(lhs: ULong): BigInt {
-    TODO("Not yet implemented")
-  }
+  override fun rem(lhs: Byte) = rem(lhs.toBigInt())
+  override fun rem(lhs: Short) = rem(lhs.toBigInt())
+  override fun rem(lhs: Int) = rem(lhs.toBigInt())
+  override fun rem(lhs: Long) = rem(lhs.toBigInt())
+  override fun rem(lhs: UByte) = rem(lhs.toBigInt())
+  override fun rem(lhs: UShort) = rem(lhs.toBigInt())
+  override fun rem(lhs: UInt) = rem(lhs.toBigInt())
+  override fun rem(lhs: ULong) = rem(lhs.toBigInt())
 
   override fun rem(lhs: BigInt): BigInt {
     TODO("Not yet implemented")
@@ -817,7 +806,7 @@ internal open class BigIntImpl(
       return true
 
     if (other is BigIntImpl)
-      return digits.contentEquals(other.digits)
+      return negative == other.negative && digits.contentEquals(other.digits)
 
     return when (other) {
       is Int    -> other.toBigInt() == this
