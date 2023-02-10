@@ -227,8 +227,6 @@ class BigIntImplTest {
 
   // region times()
 
-  // region times(Byte)
-
   @Test
   fun times_byte_1() {
     data class Test(val a: Byte, val b: Byte, val expect: String)
@@ -250,10 +248,6 @@ class BigIntImplTest {
       assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
     }
   }
-
-  // endregion times(Byte)
-
-  // region times(Short)
 
   @Test
   fun times_short_1() {
@@ -277,10 +271,6 @@ class BigIntImplTest {
     }
   }
 
-  // endregion times(Short)
-
-  // region times(Short)
-
   @Test
   fun times_int_1() {
     data class Test(val a: Int, val b: Int, val expect: String)
@@ -302,10 +292,6 @@ class BigIntImplTest {
       assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
     }
   }
-
-  // endregion times(Short)
-
-  // region times(Short)
 
   @Test
   fun times_long_1() {
@@ -329,7 +315,77 @@ class BigIntImplTest {
     }
   }
 
-  // endregion times(Short)
+  @Test
+  fun times_ubyte_1() {
+    data class Test(val a: UByte, val b: UByte, val expect: String)
+
+    val tests = arrayOf(
+      Test(0u, 0u, "0"),
+      Test(0u, 1u, "0"),
+      Test(1u, 0u, "0"),
+      Test(1u, 1u, "1"),
+      Test(1u, 255u, "255"),
+      Test(255u, 255u, "65025")
+    )
+
+    tests.forEachIndexed { i, test ->
+      assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
+    }
+  }
+
+  @Test
+  fun times_ushort_1() {
+    data class Test(val a: UShort, val b: UShort, val expect: String)
+
+    val tests = arrayOf(
+      Test(0u, 0u, "0"),
+      Test(0u, 1u, "0"),
+      Test(1u, 0u, "0"),
+      Test(1u, 1u, "1"),
+      Test(1u, 65535u, "65535"),
+      Test(65535u, 65535u, "4294836225")
+    )
+
+    tests.forEachIndexed { i, test ->
+      assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
+    }
+  }
+
+  @Test
+  fun times_uint_1() {
+    data class Test(val a: UInt, val b: UInt, val expect: String)
+
+    val tests = arrayOf(
+      Test(0u, 0u, "0"),
+      Test(0u, 1u, "0"),
+      Test(1u, 0u, "0"),
+      Test(1u, 1u, "1"),
+      Test(1u, 4294967295u, "4294967295"),
+      Test(4294967295u, 4294967295u, "18446744065119617025")
+    )
+
+    tests.forEachIndexed { i, test ->
+      assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
+    }
+  }
+
+  @Test
+  fun times_ulong_1() {
+    data class Test(val a: ULong, val b: ULong, val expect: String)
+
+    val tests = arrayOf(
+      Test(0u, 0u, "0"),
+      Test(0u, 1u, "0"),
+      Test(1u, 0u, "0"),
+      Test(1u, 1u, "1"),
+      Test(1u, 18446744073709551615u, "18446744073709551615"),
+      Test(18446744073709551615u, 18446744073709551615u, "340282366920938463426481119284349108225")
+    )
+
+    tests.forEachIndexed { i, test ->
+      assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
+    }
+  }
 
   // endregion times()
 }
