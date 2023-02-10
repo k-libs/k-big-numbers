@@ -3,12 +3,15 @@ package io.klibs.math
 import io.klibs.collections.ByteDeque
 
 internal class BigIntImpl(
-  override val isNegative: Boolean,
+  private val negative: Boolean,
   private val digits: ByteDeque,
 ) : BigInt {
 
+  override val isNegative: Boolean
+    get() = negative && digits.isNotEmpty()
+
   override val isPositive: Boolean
-    get() = !isNegative
+    get() = !negative && digits.isNotEmpty()
 
   // region Maintenance
 
