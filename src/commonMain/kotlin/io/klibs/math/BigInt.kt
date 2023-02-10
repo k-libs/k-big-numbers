@@ -3,9 +3,25 @@ package io.klibs.math
 import io.klibs.collections.byteDequeOf
 
 sealed interface BigInt {
+
+  /**
+   * Indicates whether this `BigInt` represents a negative value.
+   *
+   * If this `BigInt` is equal to `0`, then this will be `false`.
+   */
   val isNegative: Boolean
+
+  /**
+   * Indicates whether this `BigInt` represents a positive value.
+   *
+   * If this `BigInt` is equal to `0`, then this will be `false`.
+   */
   val isPositive: Boolean
-  val isZero:     Boolean
+
+  /**
+   * Indicates whether this `BigInt` is equal to `0`.
+   */
+  val isZero: Boolean
 
   /**
    * Tests whether the value of this [BigInt] could fit into a [Byte] without
@@ -55,9 +71,52 @@ sealed interface BigInt {
    */
   fun fitsLong(): Boolean
 
+  /**
+   * Tests whether the value of this [BigInt] could fit into a [UByte] without
+   * overflowing it.
+   *
+   * Essentially testing `0 <= this <= 255`
+   *
+   * @return `true` if the value of this `BigInt` could fit into a `UByte` type
+   * without overflowing it.  `false` if the value of this `BigInt` would
+   * overflow a `UByte`.
+   */
   fun fitsUByte(): Boolean
+
+  /**
+   * Tests whether the value of this [BigInt] could fit into a [UShort] without
+   * overflowing it.
+   *
+   * Essentially testing `0 <= this <= 65535`
+   *
+   * @return `true` if the value of this `BigInt` could fit into a `UShort` type
+   * without overflowing it.  `false` if the value of this `BigInt` would
+   * overflow a `UShort`.
+   */
   fun fitsUShort(): Boolean
+
+  /**
+   * Tests whether the value of this [BigInt] could fit into a [UInt] without
+   * overflowing it.
+   *
+   * Essentially testing `0 <= this <= 4294967295`
+   *
+   * @return `true` if the value of this `BigInt` could fit into a `UInt` type
+   * without overflowing it.  `false` if the value of this `BigInt` would
+   * overflow a `UInt`.
+   */
   fun fitsUInt(): Boolean
+
+  /**
+   * Tests whether the value of this [BigInt] could fit into a [ULong] without
+   * overflowing it.
+   *
+   * Essentially testing `0 <= this <= 18446744073709551615`
+   *
+   * @return `true` if the value of this `BigInt` could fit into a `ULong` type
+   * without overflowing it.  `false` if the value of this `BigInt` would
+   * overflow a `ULong`.
+   */
   fun fitsULong(): Boolean
 
   fun toByte(): Byte
