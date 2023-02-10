@@ -16,6 +16,7 @@ internal const val U_ASCII_ZERO: UByte = 48u
 
 internal inline fun min(a: Int, b: Int): Int = if (a < b) a else b
 internal inline fun max(a: Int, b: Int): Int = if (a > b) a else b
+internal inline fun abs(a: Byte) = if (a < 0) (-a).toByte() else a
 
 internal fun Char.isBase10Digit(): Boolean = this in '0' .. '9'
 

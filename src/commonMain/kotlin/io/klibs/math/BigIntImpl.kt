@@ -1,6 +1,7 @@
 package io.klibs.math
 
 import io.klibs.collections.ByteDeque
+import io.klibs.collections.IntDeque
 import io.klibs.collections.byteDequeOf
 
 internal open class BigIntImpl(
@@ -831,7 +832,7 @@ internal open class BigIntImpl(
 }
 
 private fun multiply(a: ByteDeque, b: ByteDeque): ByteDeque {
-  val o = ByteDeque(a.size + b.size)
+  val t = IntDeque(a.size + b.size)
   var c = 0
   var s: Int
   var p: Int
@@ -840,36 +841,41 @@ private fun multiply(a: ByteDeque, b: ByteDeque): ByteDeque {
     for (j in 0 .. b.lastIndex) {
       p = i + j
 
-      if (p < o.size) {
-        o[p] = (o[p] + a[i] * b[j]).toByte()
+      if (p < t.size) {
+        t[p] = (t[p] + a[i] * b[j])
       } else {
-        while (p > o.size) {
-          o.pushLast(0)
+        while (p > t.size) {
+          t.pushLast(0)
         }
 
-        o.pushLast((a[i] * b[j]).toByte())
+        t.pushLast(a[i] * b[j])
       }
     }
   }
 
-  for (i in o.lastIndex downTo 0) {
-    s = c + o[i]
-    o[i] = (s % 10).toByte()
+  for (i in t.lastIndex downTo 0) {
+    s = c + t[i]
+    t[i] = (s % 10)
     c = s / 10
   }
 
   while (c > 0) {
-    o.pushFirst((c % 10).toByte())
+    t.pushFirst((c % 10))
     c /= 10
   }
 
-  trimToSize(o)
+  trimToSize(t)
+
+  val o = ByteDeque(t.size)
+  for (v in t) {
+    o.pushLast(v.toByte())
+  }
 
   return o
 }
 
-private fun trimToSize(a: ByteDeque) {
-  while (a.size > 0 && a.peekFirst() == BYTE_0)
+private fun trimToSize(a: IntDeque) {
+  while (a.size > 0 && a.peekFirst() == 0)
     a.popFirst()
 
   a.trimToSize()

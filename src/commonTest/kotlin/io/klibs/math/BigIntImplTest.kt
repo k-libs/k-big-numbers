@@ -2,7 +2,6 @@ package io.klibs.math
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
 class BigIntImplTest {
@@ -253,6 +252,84 @@ class BigIntImplTest {
   }
 
   // endregion times(Byte)
+
+  // region times(Short)
+
+  @Test
+  fun times_short_1() {
+    data class Test(val a: Short, val b: Short, val expect: String)
+
+    val tests = arrayOf(
+      Test(0, 0, "0"),                   // 0
+      Test(0, 1, "0"),                   // 1
+      Test(1, 0, "0"),                   // 2
+      Test(1, 1, "1"),                   // 3
+      Test(1, -1, "-1"),                 // 4
+      Test(-1, 1, "-1"),                 // 5
+      Test(-1, -1, "1"),                 // 6
+      Test(1, 32767, "32767"),           // 7
+      Test(1, -32768, "-32768"),         // 8
+      Test(32767, -32768, "-1073709056") // 9
+    )
+
+    tests.forEachIndexed { i, test ->
+      assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
+    }
+  }
+
+  // endregion times(Short)
+
+  // region times(Short)
+
+  @Test
+  fun times_int_1() {
+    data class Test(val a: Int, val b: Int, val expect: String)
+
+    val tests = arrayOf(
+      Test(0, 0, "0"),
+      Test(0, 1, "0"),
+      Test(1, 0, "0"),
+      Test(1, 1, "1"),
+      Test(1, -1, "-1"),
+      Test(-1, 1, "-1"),
+      Test(-1, -1, "1"),
+      Test(1, 2147483647, "2147483647"),
+      Test(1, -2147483648, "-2147483648"),
+      Test(2147483647, -2147483648, "-4611686016279904256")
+    )
+
+    tests.forEachIndexed { i, test ->
+      assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
+    }
+  }
+
+  // endregion times(Short)
+
+  // region times(Short)
+
+  @Test
+  fun times_long_1() {
+    data class Test(val a: Long, val b: Long, val expect: String)
+
+    val tests = arrayOf(
+      Test(0, 0, "0"),
+      Test(0, 1, "0"),
+      Test(1, 0, "0"),
+      Test(1, 1, "1"),
+      Test(1, -1, "-1"),
+      Test(-1, 1, "-1"),
+      Test(-1, -1, "1"),
+      Test(1, Long.MAX_VALUE, "9223372036854775807"),
+      Test(1, Long.MIN_VALUE, "-9223372036854775808"),
+      Test(Long.MAX_VALUE, Long.MIN_VALUE, "-85070591730234615856620279821087277056")
+    )
+
+    tests.forEachIndexed { i, test ->
+      assertEquals(test.expect, (bigIntOf(test.a) * test.b).toPlainString(), "Test $i failed.")
+    }
+  }
+
+  // endregion times(Short)
 
   // endregion times()
 }

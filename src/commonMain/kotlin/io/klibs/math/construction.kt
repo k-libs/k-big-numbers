@@ -5,62 +5,58 @@ import io.klibs.collections.ByteDeque
 
 fun bigIntOf(value: Byte): BigInt {
   val out = ByteDeque(value.decStringWidth())
-  val neg = value < 0
-  var rem = (if (neg) -value else value).toInt()
+  var rem = value.toInt()
 
-  while (rem > 0) {
-    out.pushFirst((rem % 10).toByte())
+  while (rem != 0) {
+    out.pushFirst(abs((rem % 10).toByte()))
     rem /= 10
   }
 
   out.trimToSize()
 
-  return BigIntImpl(neg, out)
+  return BigIntImpl(value < 0, out)
 }
 
 fun bigIntOf(value: Short): BigInt {
   val out = ByteDeque(value.decStringWidth())
-  val neg = value < 0
-  var rem = (if (neg) -value else value).toInt()
+  var rem = value.toInt()
 
-  while (rem > 0) {
-    out.pushFirst((rem % 10).toByte())
+  while (rem != 0) {
+    out.pushFirst(abs((rem % 10).toByte()))
     rem /= 10
   }
 
   out.trimToSize()
 
-  return BigIntImpl(neg, out)
+  return BigIntImpl(value < 0, out)
 }
 
 fun bigIntOf(value: Int): BigInt {
   val out = ByteDeque(value.decStringWidth())
-  val neg = value < 0
-  var rem = if (neg) -value else value
+  var rem = value
 
-  while (rem > 0) {
-    out.pushFirst((rem % 10).toByte())
+  while (rem != 0) {
+    out.pushFirst(abs((rem % 10).toByte()))
     rem /= 10
   }
 
   out.trimToSize()
 
-  return BigIntImpl(neg, out)
+  return BigIntImpl(value < 0, out)
 }
 
 fun bigIntOf(value: Long): BigInt {
   val out = ByteDeque(value.decStringWidth())
-  val neg = value < 0
-  var rem = if (neg) -value else value
+  var rem = value
 
-  while (rem > 0) {
-    out.pushFirst((rem % 10).toByte())
+  while (rem != 0L) {
+    out.pushFirst(abs((rem % 10).toByte()))
     rem /= 10
   }
 
   out.trimToSize()
 
-  return BigIntImpl(neg, out)
+  return BigIntImpl(value < 0, out)
 }
 
 fun bigIntOf(value: UByte): BigInt {
