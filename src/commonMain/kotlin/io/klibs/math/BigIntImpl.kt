@@ -2,8 +2,8 @@ package io.klibs.math
 
 import io.klibs.collections.ByteDeque
 
-internal class BigIntImpl(
-  private val negative: Boolean,
+internal open class BigIntImpl(
+  private var negative: Boolean,
   private val digits: ByteDeque,
 ) : BigInt {
 
@@ -723,6 +723,8 @@ internal class BigIntImpl(
 
   // endregion Div
 
+  // region Rem
+
   override fun rem(lhs: Byte): BigInt {
     TODO("Not yet implemented")
   }
@@ -759,6 +761,8 @@ internal class BigIntImpl(
     TODO("Not yet implemented")
   }
 
+  // endregion Rem
+
   override fun compareTo(lhs: Byte) = compareTo(lhs.toBigInt())
   override fun compareTo(lhs: Short) = compareTo(lhs.toBigInt())
   override fun compareTo(lhs: Int) = compareTo(lhs.toBigInt())
@@ -791,6 +795,23 @@ internal class BigIntImpl(
 
   override fun unaryMinus(): BigInt = BigIntImpl(!isNegative, digits)
 
+  override fun toPlainString(): String {
+    if (digits.isEmpty())
+      return "0"
+
+    val out = if (isNegative)
+      StringBuilder(digits.size + 1).append('-')
+    else
+      StringBuilder(digits.size)
+
+    var i = 0;
+    while (i < digits.size) {
+      out.append('0' + digits[i++].toInt())
+    }
+
+    return out.toString()
+  }
+
   override fun equals(other: Any?): Boolean {
     if (other === this)
       return true
@@ -811,21 +832,8 @@ internal class BigIntImpl(
     }
   }
 
-  override fun toPlainString(): String {
-    if (digits.isEmpty())
-      return "0"
-
-    val out = if (isNegative)
-      StringBuilder(digits.size + 1).append('-')
-    else
-      StringBuilder(digits.size)
-
-    var i = 0;
-    while (i < digits.size) {
-      out.append('0' + digits[i++].toInt())
-    }
-
-    return out.toString()
+  override fun hashCode(): Int {
+    return negative.hashCode() + digits.hashCode()
   }
 
   override fun toString() = toPlainString()

@@ -1,6 +1,6 @@
 package io.klibs.math
 
-import io.klibs.collections.ByteDeque
+import io.klibs.collections.byteDequeOf
 
 sealed interface BigInt {
   val isNegative: Boolean
@@ -134,7 +134,7 @@ sealed interface BigInt {
   fun toPlainString(): String
 
   companion object {
-    val Zero: BigInt = BigIntImpl(false, ByteDeque(0))
+    val Zero: BigInt = BigIntImpl(false, byteDequeOf())
   }
 }
 
