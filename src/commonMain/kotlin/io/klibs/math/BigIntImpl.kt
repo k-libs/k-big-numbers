@@ -2,7 +2,6 @@ package io.klibs.math
 
 import io.klibs.collections.ByteDeque
 import io.klibs.collections.IntDeque
-import io.klibs.collections.byteDequeOf
 
 internal open class BigIntImpl(
   private var negative: Boolean,
@@ -480,29 +479,29 @@ internal open class BigIntImpl(
 
   // region Plus
 
-  override fun plus(lhs: Byte): BigInt = plus(lhs.toLong())
-  override fun plus(lhs: Short): BigInt = plus(lhs.toLong())
-  override fun plus(lhs: Int): BigInt = plus(lhs.toLong())
+  override fun plus(rhs: Byte): BigInt = plus(rhs.toLong())
+  override fun plus(rhs: Short): BigInt = plus(rhs.toLong())
+  override fun plus(rhs: Int): BigInt = plus(rhs.toLong())
 
-  override fun plus(lhs: Long): BigInt {
-    return if (lhs == 0L)
+  override fun plus(rhs: Long): BigInt {
+    return if (rhs == 0L)
       BigIntImpl(isNegative, digits)
     else if (isNegative) {
-      if (lhs > 0L)
-        posMinus(lhs)
+      if (rhs > 0L)
+        posMinus(rhs)
       else
-        posPlus(-lhs)
+        posPlus(-rhs)
     } else {
-      if (lhs > 0L)
-        posPlus(lhs)
+      if (rhs > 0L)
+        posPlus(rhs)
       else
-        posMinus(-lhs)
+        posMinus(-rhs)
     }
   }
 
-  private fun posPlus(lhs: Long): BigInt {
+  private fun posPlus(rhs: Long): BigInt {
     val out = ByteDeque(digits.size)
-    var rem = lhs
+    var rem = rhs
 
     var i = digits.lastIndex
     while (i >= 0) {
@@ -530,22 +529,22 @@ internal open class BigIntImpl(
     return BigIntImpl(isNegative, out)
   }
 
-  override fun plus(lhs: UByte) = plus(lhs.toULong())
-  override fun plus(lhs: UShort) = plus(lhs.toULong())
-  override fun plus(lhs: UInt) = plus(lhs.toULong())
+  override fun plus(rhs: UByte) = plus(rhs.toULong())
+  override fun plus(rhs: UShort) = plus(rhs.toULong())
+  override fun plus(rhs: UInt) = plus(rhs.toULong())
 
-  override fun plus(lhs: ULong): BigInt {
-    return if (lhs == 0uL)
+  override fun plus(rhs: ULong): BigInt {
+    return if (rhs == 0uL)
       BigIntImpl(isNegative, digits)
     else if (isNegative)
-      posMinus(lhs)
+      posMinus(rhs)
     else
-      posPlus(lhs)
+      posPlus(rhs)
   }
 
-  private fun posPlus(lhs: ULong): BigInt {
+  private fun posPlus(rhs: ULong): BigInt {
     val out = ByteDeque(digits.size)
-    var rem = lhs
+    var rem = rhs
 
     var i = digits.lastIndex
     while (i >= 0) {
@@ -573,21 +572,21 @@ internal open class BigIntImpl(
     return BigIntImpl(isNegative, out)
   }
 
-  override fun plus(lhs: BigInt): BigInt {
-    return if (isNegative && lhs.isNegative)
-      posPlus(lhs as BigIntImpl)
+  override fun plus(rhs: BigInt): BigInt {
+    return if (isNegative && rhs.isNegative)
+      posPlus(rhs as BigIntImpl)
     else
-      posMinus(lhs as BigIntImpl)
+      posMinus(rhs as BigIntImpl)
   }
 
-  private fun posPlus(lhs: BigIntImpl): BigInt {
-    val out = ByteDeque(max(lhs.digits.size, digits.size))
+  private fun posPlus(rhs: BigIntImpl): BigInt {
+    val out = ByteDeque(max(rhs.digits.size, digits.size))
 
     var sum: Int
     var car = 0
 
     for (i in out.capacity downTo 1) {
-      sum = (digits.getOrZero(i) + lhs.digits.getOrZero(i)) + car
+      sum = (digits.getOrZero(i) + rhs.digits.getOrZero(i)) + car
       car = sum / 10
       out.pushFirst((sum % 10).toByte())
     }
@@ -604,54 +603,54 @@ internal open class BigIntImpl(
 
   // region Minus
 
-  override fun minus(lhs: Byte) = minus(lhs.toLong())
-  override fun minus(lhs: Short) = minus(lhs.toLong())
-  override fun minus(lhs: Int) = minus(lhs.toLong())
+  override fun minus(rhs: Byte) = minus(rhs.toLong())
+  override fun minus(rhs: Short) = minus(rhs.toLong())
+  override fun minus(rhs: Int) = minus(rhs.toLong())
 
-  override fun minus(lhs: Long): BigInt {
-    return if (lhs == 0L)
+  override fun minus(rhs: Long): BigInt {
+    return if (rhs == 0L)
       BigIntImpl(isNegative, digits)
     else if (isNegative) {
-      if (lhs < 0L)
-        posMinus(-lhs)
+      if (rhs < 0L)
+        posMinus(-rhs)
       else
-        posPlus(lhs)
+        posPlus(rhs)
     } else {
-      if (lhs < 0L)
-        posPlus(-lhs)
+      if (rhs < 0L)
+        posPlus(-rhs)
       else
-        posMinus(lhs)
+        posMinus(rhs)
     }
   }
 
-  private fun posMinus(lhs: Long): BigInt {
-    return posMinus(lhs.toBigInt() as BigIntImpl)
+  private fun posMinus(rhs: Long): BigInt {
+    return posMinus(rhs.toBigInt() as BigIntImpl)
   }
 
-  override fun minus(lhs: UByte) = minus(lhs.toULong())
-  override fun minus(lhs: UShort) = minus(lhs.toULong())
-  override fun minus(lhs: UInt) = minus(lhs.toULong())
+  override fun minus(rhs: UByte) = minus(rhs.toULong())
+  override fun minus(rhs: UShort) = minus(rhs.toULong())
+  override fun minus(rhs: UInt) = minus(rhs.toULong())
 
-  override fun minus(lhs: ULong): BigInt {
-    return if (lhs == 0uL)
+  override fun minus(rhs: ULong): BigInt {
+    return if (rhs == 0uL)
       BigIntImpl(isNegative, digits)
     else if (isNegative)
-      posPlus(lhs)
+      posPlus(rhs)
     else
-      posMinus(lhs)
+      posMinus(rhs)
   }
 
-  private fun posMinus(lhs: ULong): BigInt {
-    return posMinus(lhs.toBigInt() as BigIntImpl)
+  private fun posMinus(rhs: ULong): BigInt {
+    return posMinus(rhs.toBigInt() as BigIntImpl)
   }
 
-  override fun minus(lhs: BigInt): BigInt {
+  override fun minus(rhs: BigInt): BigInt {
     TODO()
   }
 
-  private fun posMinus(lhs: BigIntImpl): BigInt {
-    if (this < lhs)
-      return -lhs.posMinus(this)
+  private fun posMinus(rhs: BigIntImpl): BigInt {
+    if (this < rhs)
+      return -rhs.posMinus(this)
 
     val out = ByteDeque(digits.size)
     var borrow = false
@@ -659,10 +658,10 @@ internal open class BigIntImpl(
     var l: Int
 
     var i = digits.lastIndex
-    var j = lhs.digits.lastIndex
+    var j = rhs.digits.lastIndex
     while (i >= 0) {
       r = digits[i].toInt()
-      l = if (j > -1) lhs.digits[j].toInt() else 0
+      l = if (j > -1) rhs.digits[j].toInt() else 0
 
       if (borrow) {
         r--
@@ -691,92 +690,95 @@ internal open class BigIntImpl(
 
   // region Times
 
-  override fun times(lhs: Byte) = times(lhs.toBigInt())
-  override fun times(lhs: Short) = times(lhs.toBigInt())
-  override fun times(lhs: Int) = times(lhs.toBigInt())
-  override fun times(lhs: Long) = times(lhs.toBigInt())
-  override fun times(lhs: UByte) = times(lhs.toBigInt())
-  override fun times(lhs: UShort) = times(lhs.toBigInt())
-  override fun times(lhs: UInt) = times(lhs.toBigInt())
-  override fun times(lhs: ULong) = times(lhs.toBigInt())
-  override fun times(lhs: BigInt): BigInt {
-    if (isZero || lhs.isZero)
+  override fun times(rhs: Byte) = times(rhs.toBigInt())
+  override fun times(rhs: Short) = times(rhs.toBigInt())
+  override fun times(rhs: Int) = times(rhs.toBigInt())
+  override fun times(rhs: Long) = times(rhs.toBigInt())
+  override fun times(rhs: UByte) = times(rhs.toBigInt())
+  override fun times(rhs: UShort) = times(rhs.toBigInt())
+  override fun times(rhs: UInt) = times(rhs.toBigInt())
+  override fun times(rhs: ULong) = times(rhs.toBigInt())
+  override fun times(rhs: BigInt): BigInt {
+    if (isZero || rhs.isZero)
       return BigInt.Zero
 
-    lhs as BigIntImpl
+    rhs as BigIntImpl
 
-    return BigIntImpl(negative != lhs.negative, multiply(this.digits, lhs.digits))
+    return BigIntImpl(negative != rhs.negative, multiply(this.digits, rhs.digits))
   }
 
   // endregion Times
 
   // region Div
 
-  override fun div(lhs: Byte) = div(lhs.toBigInt())
-  override fun div(lhs: Short) = div(lhs.toBigInt())
-  override fun div(lhs: Int) = div(lhs.toBigInt())
-  override fun div(lhs: Long) = div(lhs.toBigInt())
-  override fun div(lhs: UByte) = div(lhs.toBigInt())
-  override fun div(lhs: UShort) = div(lhs.toBigInt())
-  override fun div(lhs: UInt) = div(lhs.toBigInt())
-  override fun div(lhs: ULong) = div(lhs.toBigInt())
+  override fun div(rhs: Byte) = div(rhs.toBigInt())
+  override fun div(rhs: Short) = div(rhs.toBigInt())
+  override fun div(rhs: Int) = div(rhs.toBigInt())
+  override fun div(rhs: Long) = div(rhs.toBigInt())
+  override fun div(rhs: UByte) = div(rhs.toBigInt())
+  override fun div(rhs: UShort) = div(rhs.toBigInt())
+  override fun div(rhs: UInt) = div(rhs.toBigInt())
+  override fun div(rhs: ULong) = div(rhs.toBigInt())
 
-  override fun div(lhs: BigInt): BigInt {
-    if (isZero || this < lhs)
+  override fun div(rhs: BigInt): BigInt {
+    if (isZero || this < rhs)
       return BigInt.Zero
-    if (lhs.isZero)
+    if (rhs.isZero)
       TODO("division by zero exception")
-    if (this == lhs)
-      return BigIntImpl(false, byteDequeOf(1))
+    if (this == rhs)
+      return BigInt.One
+    if (rhs == BigInt.One)
+      return this
+    if (rhs == BigInt.NegativeOne)
+      return -this
 
-    return divide(lhs as BigIntImpl)
+    rhs as BigIntImpl
+
+    return BigIntImpl(negative != rhs.isNegative, divide(this.digits, rhs.digits))
   }
 
-  private fun divide(lhs: BigIntImpl): BigInt {
-    TODO()
-  }
 
   // endregion Div
 
   // region Rem
 
-  override fun rem(lhs: Byte) = rem(lhs.toBigInt())
-  override fun rem(lhs: Short) = rem(lhs.toBigInt())
-  override fun rem(lhs: Int) = rem(lhs.toBigInt())
-  override fun rem(lhs: Long) = rem(lhs.toBigInt())
-  override fun rem(lhs: UByte) = rem(lhs.toBigInt())
-  override fun rem(lhs: UShort) = rem(lhs.toBigInt())
-  override fun rem(lhs: UInt) = rem(lhs.toBigInt())
-  override fun rem(lhs: ULong) = rem(lhs.toBigInt())
+  override fun rem(rhs: Byte) = rem(rhs.toBigInt())
+  override fun rem(rhs: Short) = rem(rhs.toBigInt())
+  override fun rem(rhs: Int) = rem(rhs.toBigInt())
+  override fun rem(rhs: Long) = rem(rhs.toBigInt())
+  override fun rem(rhs: UByte) = rem(rhs.toBigInt())
+  override fun rem(rhs: UShort) = rem(rhs.toBigInt())
+  override fun rem(rhs: UInt) = rem(rhs.toBigInt())
+  override fun rem(rhs: ULong) = rem(rhs.toBigInt())
 
-  override fun rem(lhs: BigInt): BigInt {
+  override fun rem(rhs: BigInt): BigInt {
     TODO("Not yet implemented")
   }
 
   // endregion Rem
 
-  override fun compareTo(lhs: Byte) = compareTo(lhs.toBigInt())
-  override fun compareTo(lhs: Short) = compareTo(lhs.toBigInt())
-  override fun compareTo(lhs: Int) = compareTo(lhs.toBigInt())
-  override fun compareTo(lhs: Long) = compareTo(lhs.toBigInt())
-  override fun compareTo(lhs: UByte) = compareTo(lhs.toBigInt())
-  override fun compareTo(lhs: UShort) = compareTo(lhs.toBigInt())
-  override fun compareTo(lhs: UInt) = compareTo(lhs.toBigInt())
-  override fun compareTo(lhs: ULong) = compareTo(lhs.toBigInt())
+  override fun compareTo(rhs: Byte) = compareTo(rhs.toBigInt())
+  override fun compareTo(rhs: Short) = compareTo(rhs.toBigInt())
+  override fun compareTo(rhs: Int) = compareTo(rhs.toBigInt())
+  override fun compareTo(rhs: Long) = compareTo(rhs.toBigInt())
+  override fun compareTo(rhs: UByte) = compareTo(rhs.toBigInt())
+  override fun compareTo(rhs: UShort) = compareTo(rhs.toBigInt())
+  override fun compareTo(rhs: UInt) = compareTo(rhs.toBigInt())
+  override fun compareTo(rhs: ULong) = compareTo(rhs.toBigInt())
 
-  override fun compareTo(lhs: BigInt): Int {
-    lhs as BigIntImpl
+  override fun compareTo(rhs: BigInt): Int {
+    rhs as BigIntImpl
 
-    if (digits.size > lhs.digits.size)
+    if (digits.size > rhs.digits.size)
       return 1
-    else if (digits.size < lhs.digits.size)
+    else if (digits.size < rhs.digits.size)
       return -1
 
     var i = 0
     while (i < digits.size) {
-      if (digits[i] > lhs.digits[i])
+      if (digits[i] > rhs.digits[i])
         return 1
-      else if (digits[i] < lhs.digits[i])
+      else if (digits[i] < rhs.digits[i])
         return -1
       else
         i++
@@ -872,6 +874,17 @@ private fun multiply(a: ByteDeque, b: ByteDeque): ByteDeque {
   }
 
   return o
+}
+
+private fun divide(dividend: ByteDeque, divisor: ByteDeque): ByteDeque {
+  val quotient = ByteDeque(dividend.size)
+  val remainder = ByteDeque()
+
+  for
+
+
+
+
 }
 
 private fun trimToSize(a: IntDeque) {

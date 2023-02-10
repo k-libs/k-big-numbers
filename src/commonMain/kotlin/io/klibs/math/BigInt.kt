@@ -193,7 +193,9 @@ sealed interface BigInt {
   fun toPlainString(): String
 
   companion object {
+    val NegativeOne: BigInt = BigIntImpl(false, byteDequeOf(-1))
     val Zero: BigInt = BigIntImpl(false, byteDequeOf())
+    val One: BigInt = BigIntImpl(false, byteDequeOf(1))
   }
 }
 
