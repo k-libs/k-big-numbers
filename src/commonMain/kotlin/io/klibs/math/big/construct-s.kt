@@ -12,67 +12,68 @@ fun bigIntOf(b: Byte): BigInt {
   }
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun mutableBigIntOf(b: Byte): MutableBigInt {
   return when {
-    b < 0 -> MutableBigIntImpl(-1, intDequeOf(-b))
-    b > 0 -> MutableBigIntImpl(1, intDequeOf(b.toInt()))
+    b < 0 -> MutableBigIntImpl(-1, uintDequeOf((-b).toUInt()))
+    b > 0 -> MutableBigIntImpl(1, uintDequeOf(b.toUInt()))
     else  -> MutableBigInt.zero()
   }
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun bigIntOf(s: Short): BigInt {
   return when {
-    s < 0 -> ImmutableBigInt(MutableBigIntImpl(-1, intDequeOf(-s)))
-    s > 0 -> ImmutableBigInt(MutableBigIntImpl(1, intDequeOf(s.toInt())))
+    s < 0 -> ImmutableBigInt(MutableBigIntImpl(-1, uintDequeOf((-s).toUInt())))
+    s > 0 -> ImmutableBigInt(MutableBigIntImpl(1, uintDequeOf(s.toUInt())))
     else  -> BigInt.Zero
   }
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun mutableBigIntOf(s: Short): MutableBigInt {
   return when {
-    s < 0 -> MutableBigIntImpl(-1, intDequeOf(-s))
-    s > 0 -> MutableBigIntImpl(1, intDequeOf(s.toInt()))
+    s < 0 -> MutableBigIntImpl(-1, uintDequeOf((-s).toUInt()))
+    s > 0 -> MutableBigIntImpl(1, uintDequeOf(s.toUInt()))
     else  -> MutableBigInt.zero()
   }
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun bigIntOf(i: Int): BigInt {
   return when {
-    i < 0 -> ImmutableBigInt(MutableBigIntImpl(-1, intDequeOf(i)))
-    i > 0 -> ImmutableBigInt(MutableBigIntImpl(1, intDequeOf(i)))
+    i < 0 -> ImmutableBigInt(MutableBigIntImpl(-1, uintDequeOf((-(i.toLong())).toUInt())))
+    i > 0 -> ImmutableBigInt(MutableBigIntImpl(1, uintDequeOf(i.toUInt())))
     else  -> BigInt.Zero
   }
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun mutableBigIntOf(i: Int): MutableBigInt {
   return when {
-    i < 0 -> MutableBigIntImpl(-1, intDequeOf(i))
-    i > 0 -> MutableBigIntImpl(1, intDequeOf(i))
+    i < 0 -> MutableBigIntImpl(-1, uintDequeOf((-(i.toLong())).toUInt()))
+    i > 0 -> MutableBigIntImpl(1, uintDequeOf(i.toUInt()))
     else  -> MutableBigInt.zero()
   }
 }
 
 fun bigIntOf(l: Long): BigInt {
-  return when {
-    l > 0 -> {
-      if (l > L_I_MAX) {
-        ImmutableBigInt(MutableBigIntImpl(1, intDequeOf((l ushr 32).toInt(), (l and L_M).toInt())))
-      } else {
-        bigIntOf(l.toInt())
-      }
-    }
-    l < 0 -> {
-      if (l < L_I_MIN) {
-        ImmutableBigInt(MutableBigIntImpl(-1, intDequeOf((l ushr 32).toInt(), (l and L_M).toInt())))
-      } else {
-        bigIntOf(l.toInt())
-      }
-    }
-    else  -> BigInt.Zero
-  }
+  if (l == 0L)
+    return BigInt.Zero
+
+  val neg = l < 0
+
+  val low = l % L_M
+
+
 }
 
-fun mutableBigIntOf(l: Long): MutableBigInt {}
+fun mutableBigIntOf(l: Long): MutableBigInt {
+  if (l == 0L)
+    return MutableBigInt.zero()
+
+
+}
 
 fun bigIntOf(s: String, radix: BigIntRadix = BigIntRadix.Ten): BigInt {
   return when (radix) {
