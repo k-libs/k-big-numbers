@@ -1,24 +1,40 @@
-package io.klibs.math
+package io.klibs.math.big
 
-internal const val BYTE_0: Byte = 0
-internal const val BYTE_1: Byte = 1
-internal const val BYTE_2: Byte = 2
-internal const val BYTE_3: Byte = 3
-internal const val BYTE_4: Byte = 4
-internal const val BYTE_5: Byte = 5
-internal const val BYTE_6: Byte = 6
-internal const val BYTE_7: Byte = 7
-internal const val BYTE_8: Byte = 8
-internal const val BYTE_9: Byte = 9
+import io.klibs.collections.ByteDeque
 
-internal const val B_ASCII_ZERO: Byte = 48
-internal const val U_ASCII_ZERO: UByte = 48u
+internal inline fun max(a: Int, b: Int) = if (a > b) a else b
+internal inline fun min(a: Int, b: Int) = if (a < b) a else b
 
-internal inline fun min(a: Int, b: Int): Int = if (a < b) a else b
-internal inline fun max(a: Int, b: Int): Int = if (a > b) a else b
+internal inline fun ByteDeque.clone(): ByteDeque {
+  val out = ByteDeque(size)
+
+  for (b in this)
+    out.pushLast(b)
+
+  return out
+}
+
 internal inline fun abs(a: Byte) = if (a < 0) (-a).toByte() else a
 
-internal fun Char.isBase10Digit(): Boolean = this in '0' .. '9'
+internal inline fun Char.toBase8Digit(): Int =
+  this - '0'
+internal inline fun Char.isBase8Digit(): Boolean =
+  this in '0' .. '7'
+
+internal inline fun Char.toBase10Digit(): Int =
+  this - '0'
+internal inline fun Char.isBase10Digit(): Boolean =
+  this in '0' .. '9'
+
+internal inline fun Char.toBase16Digit(): Int =
+  when (this) {
+    in '0' .. '9' -> this - '0'
+    in 'A' .. 'F' -> this - 'A' + 10
+    in 'a' .. 'f' -> this - 'a' + 10
+    else          -> throw NumberFormatException()
+  }
+internal inline fun Char.isBase16Digit(): Boolean =
+  this in '0' .. '9' || this in 'A' .. 'F' || this in 'a' .. 'f'
 
 internal fun Byte.decStringWidth() =
   when {
