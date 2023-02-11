@@ -1,12 +1,12 @@
 package io.klibs.math.big
 
-import io.klibs.collections.ByteDeque
-import io.klibs.collections.IntDeque
-import io.klibs.collections.byteDequeOf
+import io.klibs.collections.LongDeque
+import io.klibs.collections.UIntDeque
+import io.klibs.collections.uintDequeOf
 
 internal class MutableBigIntImpl : MutableBigInt {
   private var sign: Byte
-  private var digits: ByteDeque
+  private var chunks: UIntDeque
 
   override val isZero: Boolean
     get() = sign == B_0
@@ -17,9 +17,9 @@ internal class MutableBigIntImpl : MutableBigInt {
   override val isPositive: Boolean
     get() = sign > B_0
 
-  constructor(sign: Byte, digits: ByteDeque) {
+  constructor(sign: Byte, digits: UIntDeque) {
     this.sign = sign
-    this.digits = digits
+    this.chunks = digits
   }
 
   // region Plus
@@ -28,7 +28,7 @@ internal class MutableBigIntImpl : MutableBigInt {
     val r = unpack(rhs)
 
     if (this.isZero)
-      this.digits = r.digits.clone()
+      this.chunks = r.chunks.copyOf()
     else if (r.isZero)
       return
     else if (isNegative != r.isNegative)
@@ -38,24 +38,35 @@ internal class MutableBigIntImpl : MutableBigInt {
   }
 
   private fun posPlusAssign(rhs: MutableBigIntImpl) {
-    digits.ensureCapacity(max(digits.size, rhs.digits.size))
+    val x  = chunks.size
+    val y  = rhs.chunks.size
+    var rl = max(x, y)
 
-    var carry = 0
+    chunks.ensureCapacity(rl)
 
-    for (i in digits.lastIndex downTo 0) {
-      val sum = carry + digits[i] + if (i < rhs.digits.size) rhs.digits[i] else 0
-      digits[i] = (sum % 10).toByte()
-      carry = sum / 10
+    var s: Long
+    var c = 0L
+
+    while (rl > 0) {
+      s = c + (if (rl < x) chunks[rl].toLong() and L_M else 0) + (if (rl < y) rhs.chunks[rl].toLong() and L_M else 0)
+      if (rl < x)
+        chunks[rl] = (s and L_M).toUInt()
+      else
+        chunks.pushFirst((s and L_M).toUInt())
+      c = s ushr 32
+      rl--
     }
 
-    while (carry > 0) {
-      digits.pushFirst((carry % 10).toByte())
-      carry /= 10
+    while (c > 0) {
+      chunks.pushFirst((c and L_M).toUInt())
+      c = c ushr 32
     }
+
+    trimToSize(chunks)
   }
 
   override fun plus(rhs: BigInt): MutableBigInt {
-    val out = MutableBigIntImpl(sign, digits)
+    val out = MutableBigIntImpl(sign, chunks)
     out += rhs
     return out
   }
@@ -84,14 +95,14 @@ internal class MutableBigIntImpl : MutableBigInt {
       flipNegative()
     } else {
       var borrow = false
-      var r: Int
-      var l: Int
+      var r: Long
+      var l: Long
 
-      var i = digits.lastIndex
-      var j = rhs.digits.lastIndex
+      var i = chunks.lastIndex
+      var j = rhs.chunks.lastIndex
       while (i >= 0) {
-        r = digits[i].toInt()
-        l = if (j > -1) rhs.digits[j].toInt() else 0
+        r = chunks[i].toLong()
+        l = if (j > -1) rhs.chunks[j].toLong() else 0L
 
         if (borrow) {
           r--
@@ -100,20 +111,20 @@ internal class MutableBigIntImpl : MutableBigInt {
 
         if (l > r) {
           borrow = true
-          r += 10
+          r += 10000000000
         }
 
-        digits[i] = (r - l).toByte()
+        chunks[i] = (r - l).toUInt()
         i--
         j--
       }
 
-      trimToSize(digits)
+      trimToSize(chunks)
     }
   }
 
   override fun minus(rhs: BigInt): MutableBigInt {
-    val out = MutableBigIntImpl(sign, digits.clone())
+    val out = MutableBigIntImpl(sign, chunks.copyOf())
     out -= rhs
     return out
   }
@@ -127,7 +138,7 @@ internal class MutableBigIntImpl : MutableBigInt {
       return
 
     if (rhs.isZero) {
-      digits.clear()
+      chunks.clear()
       sign = 0
       return
     }
@@ -138,36 +149,36 @@ internal class MutableBigIntImpl : MutableBigInt {
   }
 
   private fun internalTimesAssign(rhs: MutableBigIntImpl) {
-    var n = digits.size
-    val m = rhs.digits.size
-    val v = IntDeque(n + m)
+    var n = chunks.size
+    val m = rhs.chunks.size
+    val v = LongDeque(n + m)
 
     for (i in 1 .. v.size)
       v.pushLast(0)
 
     for (i in 0 until n)
       for (j in 0 until m)
-        v[i + j] += digits[i] * rhs.digits[j]
+        v[i + j] += (chunks[i].toLong() and L_M) * (rhs.chunks[j].toLong() and L_M)
 
     n += m
-    digits.ensureCapacity(v.size)
+    chunks.ensureCapacity(v.size)
 
-    var s: Int
-    var t = 0
+    var s: Long
+    var t = 0L
     for (i in 0 until n) {
       s = t + v[i]
-      v[i] = s % 10
-      t = s / 10
-      digits[i] = v[i].toByte()
+      v[i] = (s and L_M)
+      t = (s ushr 32)
+      chunks[i] = (v[i] and L_M).toUInt()
     }
 
     var i = n - 1
-    while (i >= 1 && v[i--] == 0)
-      digits.popLast()
+    while (i >= 1 && v[i--] == 0L)
+      chunks.popLast()
   }
 
   override fun times(rhs: BigInt): MutableBigInt {
-    val out = MutableBigIntImpl(sign, digits.clone())
+    val out = MutableBigIntImpl(sign, chunks.copyOf())
     out *= rhs
     return out
   }
@@ -179,20 +190,20 @@ internal class MutableBigIntImpl : MutableBigInt {
 
     // If this instance has more digits than the other instance, then this one
     // is the larger value.
-    if (digits.size > r.digits.size)
+    if (chunks.size > r.chunks.size)
       return 1
 
     // If the other instance has more digits than this one, then the other one
     // is the larger value.
-    if (digits.size < r.digits.size)
+    if (chunks.size < r.chunks.size)
       return -1
 
     var i = 0
-    while (i < digits.size) {
-      if (digits[i] > r.digits[i])
+    while (i < chunks.size) {
+      if (chunks[i] > r.chunks[i])
         return 1
 
-      if (digits[i] < r.digits[i])
+      if (chunks[i] < r.chunks[i])
         return -1
 
       i++
@@ -201,24 +212,25 @@ internal class MutableBigIntImpl : MutableBigInt {
     return 0
   }
 
+  @OptIn(ExperimentalUnsignedTypes::class)
   override fun unaryMinus(): MutableBigInt {
     return if (this.isZero) {
-      MutableBigIntImpl(0, byteDequeOf())
+      MutableBigIntImpl(0, uintDequeOf())
     } else {
-      MutableBigIntImpl(sign, digits.clone()).apply { flipNegative() }
+      MutableBigIntImpl(sign, chunks.copyOf()).apply { flipNegative() }
     }
   }
 
   override fun toPlainString(): String {
-    if (digits.isEmpty())
+    if (chunks.isEmpty())
       return "0"
 
     val out = if (isNegative)
-      StringBuilder(digits.size + 1).append('-')
+      StringBuilder(chunks.size + 1).append('-')
     else
-      StringBuilder(digits.size)
+      StringBuilder(chunks.size)
 
-    for (d in digits)
+    for (d in chunks)
       out.append(d)
 
     return out.toString()
@@ -239,9 +251,4 @@ internal class MutableBigIntImpl : MutableBigInt {
       is MutableBigIntImpl -> rhs
     }
 
-  private inline fun trimToSize(b: ByteDeque) {
-    while (b.size > 0 && b.peekFirst() == B_0)
-      b.popFirst()
-    b.trimToSize()
-  }
 }
