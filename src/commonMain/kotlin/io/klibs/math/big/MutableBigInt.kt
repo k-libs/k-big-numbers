@@ -1,6 +1,6 @@
 package io.klibs.math.big
 
-import io.klibs.collections.byteDequeOf
+import io.klibs.collections.uintDequeOf
 
 sealed interface MutableBigInt : BigInt {
 
@@ -19,9 +19,11 @@ sealed interface MutableBigInt : BigInt {
   override fun unaryMinus(): MutableBigInt
 
   companion object {
-    fun zero(): MutableBigInt = MutableBigIntImpl(0, byteDequeOf())
+    @OptIn(ExperimentalUnsignedTypes::class)
+    fun zero(): MutableBigInt = MutableBigIntImpl(0, uintDequeOf())
 
-    fun one(): MutableBigInt = MutableBigIntImpl(0, byteDequeOf(1))
+    @OptIn(ExperimentalUnsignedTypes::class)
+    fun one(): MutableBigInt = MutableBigIntImpl(0, uintDequeOf(1u))
 
     inline fun ofByte(b: Byte) = mutableBigIntOf(b)
     inline fun ofShort(s: Short) = mutableBigIntOf(s)

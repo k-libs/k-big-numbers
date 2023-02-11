@@ -1,6 +1,5 @@
 package io.klibs.math.big
 
-import io.klibs.collections.intDequeOf
 import io.klibs.collections.uintDequeOf
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -62,29 +61,22 @@ fun bigIntOf(l: Long): BigInt {
     return BigInt.Zero
 
   val neg = l < 0
-
-  val low = l % L_M
-
-
+  return ImmutableBigInt(internalBigIntOfLong(neg, if (neg) (-l).toULong() else l.toULong()))
 }
 
 fun mutableBigIntOf(l: Long): MutableBigInt {
   if (l == 0L)
     return MutableBigInt.zero()
 
-
+  val neg = l < 0
+  return internalBigIntOfLong(neg, if (neg) (-l).toULong() else l.toULong())
 }
 
-fun bigIntOf(s: String, radix: BigIntRadix = BigIntRadix.Ten): BigInt {
-  return when (radix) {
-    BigIntRadix.Ten -> ImmutableBigInt(mutableBigIntOfBase10(s))
+@OptIn(ExperimentalUnsignedTypes::class)
+private fun internalBigIntOfLong(neg: Boolean, l: ULong): MutableBigInt {
+  return if (l > 0xFFFFFFFFu) {
+    MutableBigIntImpl(if (neg) -1 else 1, uintDequeOf((l shr 32).toUInt(), (l and 0xFFFFFFFFu).toUInt()))
+  } else {
+    MutableBigIntImpl(if (neg) -1 else 1, uintDequeOf(l.toUInt()))
   }
 }
-
-fun mutableBigIntOf(s: String, radix: BigIntRadix = BigIntRadix.Ten): MutableBigInt {
-  return when (radix) {
-    BigIntRadix.Ten -> mutableBigIntOfBase10(s)
-  }
-}
-
-private fun mutableBigIntOfBase10(s: String): MutableBigInt {}

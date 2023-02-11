@@ -1,6 +1,6 @@
 package io.klibs.math.big
 
-import io.klibs.collections.intDequeOf
+import io.klibs.collections.uintDequeOf
 
 sealed interface BigInt {
   val isNegative: Boolean
@@ -20,7 +20,11 @@ sealed interface BigInt {
   fun toPlainString(): String
 
   companion object {
-    val Zero: BigInt = ImmutableBigInt(MutableBigIntImpl(0, intDequeOf()))
+    @OptIn(ExperimentalUnsignedTypes::class)
+    val Zero: BigInt = ImmutableBigInt(MutableBigIntImpl(0, uintDequeOf()))
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    val One: BigInt = ImmutableBigInt(MutableBigIntImpl(1, uintDequeOf(1u)))
 
     inline fun ofByte(b: Byte) = bigIntOf(b)
     inline fun ofShort(s: Short) = bigIntOf(s)
