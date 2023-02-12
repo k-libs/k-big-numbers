@@ -1,14 +1,14 @@
 package io.klibs.math.big
 
+import io.klibs.collections.ByteDeque
 import io.klibs.collections.UIntDeque
 
 internal inline fun max(a: Int, b: Int) = if (a > b) a else b
 internal inline fun min(a: Int, b: Int) = if (a < b) a else b
 internal inline fun abs(a: Byte) = if (a < 0) (-a).toByte() else a
-internal inline fun abs(i: Int) = if (i < 0) -i else i
 
-internal inline fun trimToSize(b: UIntDeque) {
-  while (b.size > 0 && b.peekFirst() == 0u)
+internal inline fun trimToSize(b: ByteDeque) {
+  while (b.size > 0 && b.peekFirst() == B_0)
     b.popFirst()
   b.trimToSize()
 }

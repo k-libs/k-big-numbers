@@ -10,9 +10,3 @@ internal const val B_6: Byte = 6
 internal const val B_7: Byte = 7
 internal const val B_8: Byte = 8
 internal const val B_9: Byte = 9
-
-internal const val L_M: Long = 0xFFFFFFFF
-internal const val L_I_MAX = 2147483647L
-internal const val L_I_MIN = -2147483648L
-
-internal const val B_ASCII_ZERO: Byte = 48
