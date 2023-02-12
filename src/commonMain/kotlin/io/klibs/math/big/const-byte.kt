@@ -1,5 +1,6 @@
 package io.klibs.math.big
 
+internal const val B_N_1: Byte = -1
 internal const val B_0: Byte = 0
 internal const val B_1: Byte = 1
 internal const val B_2: Byte = 2

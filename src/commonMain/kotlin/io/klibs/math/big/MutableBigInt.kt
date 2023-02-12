@@ -4,19 +4,23 @@ import io.klibs.collections.uintDequeOf
 
 sealed interface MutableBigInt : BigInt {
 
-  override fun plus(rhs: BigInt): MutableBigInt
+//  override fun plus(rhs: BigInt): MutableBigInt
 
-  operator fun plusAssign(rhs: BigInt)
+//  operator fun plusAssign(rhs: BigInt)
 
-  override fun minus(rhs: BigInt): MutableBigInt
+//  override fun minus(rhs: BigInt): MutableBigInt
 
-  operator fun minusAssign(rhs: BigInt)
+//  operator fun minusAssign(rhs: BigInt)
 
-  override fun times(rhs: BigInt): MutableBigInt
+//  override fun times(rhs: BigInt): MutableBigInt
 
-  operator fun timesAssign(rhs: BigInt)
+//  operator fun timesAssign(rhs: BigInt)
+
+  override fun abs(): MutableBigInt
 
   override fun unaryMinus(): MutableBigInt
+
+  fun clone(): MutableBigInt
 
   companion object {
     @OptIn(ExperimentalUnsignedTypes::class)

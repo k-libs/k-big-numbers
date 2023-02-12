@@ -7,17 +7,19 @@ sealed interface BigInt {
   val isPositive: Boolean
   val isZero: Boolean
 
-  operator fun plus(rhs: BigInt): BigInt
+//  operator fun plus(rhs: BigInt): BigInt
 
-  operator fun minus(rhs: BigInt): BigInt
+//  operator fun minus(rhs: BigInt): BigInt
 
-  operator fun times(rhs: BigInt): BigInt
+//  operator fun times(rhs: BigInt): BigInt
 
-  operator fun compareTo(rhs: BigInt): Int
+//  operator fun compareTo(rhs: BigInt): Int
+
+  fun abs(): BigInt
 
   operator fun unaryMinus(): BigInt
 
-  fun toPlainString(): String
+  fun toString(radix: BigIntRadix): String
 
   companion object {
     @OptIn(ExperimentalUnsignedTypes::class)
