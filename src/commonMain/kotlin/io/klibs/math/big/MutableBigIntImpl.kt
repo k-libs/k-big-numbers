@@ -2,6 +2,11 @@ package io.klibs.math.big
 
 import io.klibs.collections.UIntDeque
 
+private const val MinRadix = 2
+private const val MaxRadix = 36
+
+private val LogCache = DoubleArray(MaxRadix + 1)
+
 internal class MutableBigIntImpl : MutableBigInt {
   private var sign: Byte
   private var chunks: UIntDeque
@@ -32,15 +37,7 @@ internal class MutableBigIntImpl : MutableBigInt {
     else
       this.clone()
 
-  override fun bitLength(): Long {
-    if (chunks.isEmpty())
-      return 0
-
-    var n = 0L
-
-    // The overall bit length of our number.
-    val overallBitLength = chunks.lastIndex * 32 + bitLengthForUInt(chunks[0])
-  }
+  override fun bitLength(): Long = if (chunks.isEmpty()) 0 else chunks.lastIndex * 32L + bitLengthForUInt(chunks[0])
 
   override fun toString(radix: BigIntRadix): String {
     if (isZero)
