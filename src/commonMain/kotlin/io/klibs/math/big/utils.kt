@@ -33,3 +33,4 @@ internal inline fun Char.toBase16Digit(): Int =
   }
 internal inline fun Char.isBase16Digit(): Boolean =
   this in '0' .. '9' || this in 'A' .. 'F' || this in 'a' .. 'f'
+

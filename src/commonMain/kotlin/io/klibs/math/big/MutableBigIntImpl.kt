@@ -20,6 +20,10 @@ internal class MutableBigIntImpl : MutableBigInt {
     this.chunks = digits
   }
 
+  override fun unaryMinus(): MutableBigInt = clone().apply { flipNegative() }
+
+  override fun clone(): MutableBigInt = if (isZero) MutableBigInt.zero() else MutableBigIntImpl(sign, chunks.copyOf())
+
   override fun abs(): MutableBigInt =
     if (isZero)
       MutableBigInt.zero()
@@ -28,25 +32,33 @@ internal class MutableBigIntImpl : MutableBigInt {
     else
       this.clone()
 
-  override fun unaryMinus(): MutableBigInt = clone().apply { flipNegative() }
+  override fun bitLength(): Long {
+    if (chunks.isEmpty())
+      return 0
 
-  override fun clone(): MutableBigInt = if (isZero) MutableBigInt.zero() else MutableBigIntImpl(sign, chunks.copyOf())
+    var n = 0L
+
+    val chunkBitLength = (chunks.lastIndex shl 5) + bitLengthForUInt(chunks[0])
+
+    if (sign < 0) {
+      var pow2 = bitCount(chunks[0]) == 1
+      
+    }
+  }
 
   override fun toString(radix: BigIntRadix): String {
     if (isZero)
       return "0"
 
-    val abs = internalAbs()
     val sb = if (isNegative) StringBuilder(chunks.size * 10 + 1).append('-') else StringBuilder(chunks.size * 10)
 
-    toString(abs, sb, radix, 0)
+
+
 
     return sb.toString()
   }
 
-  private fun internalAbs() = if (isNegative) -this else this
-
-  private fun toString(u: BigInt, sb: StringBuilder, r: BigIntRadix, digits: Int) {
+  private fun toString(u: MutableBigIntImpl, sb: StringBuilder, r: BigIntRadix, digits: Int) {
 
   }
 

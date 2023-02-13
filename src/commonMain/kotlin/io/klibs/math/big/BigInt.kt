@@ -15,9 +15,11 @@ sealed interface BigInt {
 
 //  operator fun compareTo(rhs: BigInt): Int
 
+  operator fun unaryMinus(): BigInt
+
   fun abs(): BigInt
 
-  operator fun unaryMinus(): BigInt
+  fun bitLength(): Long
 
   fun toString(radix: BigIntRadix): String
 
