@@ -16,10 +16,10 @@ enum class BigIntRadix {
     override val longRadix by lazy { bigIntOf(0xde0b6b3a7640000L) }
 
     override fun charToDigit(c: Char) =
-      if (c !in '0' .. '9')
-        throw NumberFormatException("invalid base 10 digit: $c")
-      else
+      if (c in '0' .. '9')
         (c - '0').toUInt()
+      else
+        throw NumberFormatException("invalid base 10 digit: $c")
   },
 //  Sixteen,
   ;

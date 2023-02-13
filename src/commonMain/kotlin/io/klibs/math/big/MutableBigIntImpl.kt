@@ -38,12 +38,8 @@ internal class MutableBigIntImpl : MutableBigInt {
 
     var n = 0L
 
-    val chunkBitLength = (chunks.lastIndex shl 5) + bitLengthForUInt(chunks[0])
-
-    if (sign < 0) {
-      var pow2 = bitCount(chunks[0]) == 1
-      
-    }
+    // The overall bit length of our number.
+    val overallBitLength = chunks.lastIndex * 32 + bitLengthForUInt(chunks[0])
   }
 
   override fun toString(radix: BigIntRadix): String {

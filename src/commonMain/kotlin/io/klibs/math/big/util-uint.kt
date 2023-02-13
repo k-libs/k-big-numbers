@@ -6,13 +6,28 @@ internal fun leadingZeroBits(value: UInt): Int {
   if (value == 0u)
     return 32
 
-  var o = 32
+  var o = 31
   var u = value
 
-  if (u >= 1u shl 16) { o -= 16; u = u shr 16 }
-  if (u >= 1u shl  8) { o -=  8; u = u shr  8 }
-  if (u >= 1u shl  4) { o -=  4; u = u shr  4 }
-  if (u >= 1u shl  2) { o -=  4; u = u shr  2 }
+  if (u >= 65536u) {
+    o -= 16
+    u = u shr 16
+  }
+
+  if (u >= 256u) {
+    o -= 8
+    u = u shr 8
+  }
+
+  if (u >= 16u) {
+    o -= 4
+    u = u shr 4
+  }
+
+  if (u >= 4u) {
+    o -= 2
+    u = u shr 2
+  }
 
   return o - (u shr 1).toInt()
 }
