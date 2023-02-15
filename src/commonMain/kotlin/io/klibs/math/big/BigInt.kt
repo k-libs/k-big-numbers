@@ -1,44 +1,47 @@
 package io.klibs.math.big
 
-import io.klibs.collections.uintDequeOf
-
 sealed interface BigInt {
+  val isZero: Boolean
   val isNegative: Boolean
   val isPositive: Boolean
-  val isZero: Boolean
 
-//  operator fun plus(rhs: BigInt): BigInt
+  operator fun plus(rhs: BigInt): BigInt
 
-//  operator fun minus(rhs: BigInt): BigInt
-
-//  operator fun times(rhs: BigInt): BigInt
-
-//  operator fun compareTo(rhs: BigInt): Int
+  operator fun minus(rhs: BigInt): BigInt
 
   operator fun unaryMinus(): BigInt
 
+  operator fun times(rhs: BigInt): BigInt
+
+  infix fun shr(n: Int): BigInt
+
+  infix fun shl(n: Int): BigInt
+
+  infix fun and(value: BigInt): BigInt
+
+  infix fun or(value: BigInt): BigInt
+
+  infix fun xor(value: BigInt): BigInt
+
+  infix fun andNot(value: BigInt): BigInt
+
+  fun inv(): BigInt
+
   fun abs(): BigInt
 
-  fun bitLength(): Long
+  fun square(): BigInt
 
-  fun toString(radix: BigIntRadix): String
+  fun bitLength(): Int
+
+  fun bitCount(): Int
 
   companion object {
-    @OptIn(ExperimentalUnsignedTypes::class)
-    val Zero: BigInt = ImmutableBigInt(MutableBigIntImpl(0, uintDequeOf()))
+    val NegativeOne: BigInt = BigIntImpl(BYTE_NEG_ONE, intArrayOf(1))
 
-    @OptIn(ExperimentalUnsignedTypes::class)
-    val One: BigInt = ImmutableBigInt(MutableBigIntImpl(1, uintDequeOf(1u)))
+    val Zero: BigInt = BigIntImpl(BYTE_ZERO, IntArray(0))
 
-    inline fun ofByte(b: Byte) = bigIntOf(b)
-    inline fun ofShort(s: Short) = bigIntOf(s)
-    inline fun ofInt(i: Int) = bigIntOf(i)
-    inline fun ofLong(l: Long) = bigIntOf(l)
+    val One: BigInt = BigIntImpl(BYTE_ONE, intArrayOf(1))
 
-    inline fun ofUByte(u: UByte) = bigIntOf(u)
-    inline fun ofUShort(u: UShort) = bigIntOf(u)
-    inline fun ofUInt(u: UInt) = bigIntOf(u)
-    inline fun ofULong(u: ULong) = bigIntOf(u)
+    val Ten: BigInt = BigIntImpl(BYTE_ONE, intArrayOf(10))
   }
 }
-
