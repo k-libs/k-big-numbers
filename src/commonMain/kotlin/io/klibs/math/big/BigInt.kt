@@ -13,6 +13,12 @@ sealed interface BigInt {
 
   operator fun times(rhs: BigInt): BigInt
 
+  operator fun div(rhs: BigInt): BigInt
+
+  operator fun rem(rhs: BigInt): BigInt
+
+  fun divideAndRemainder(value: BigInt): Pair<BigInt, BigInt>
+
   infix fun shr(n: Int): BigInt
 
   infix fun shl(n: Int): BigInt
@@ -25,6 +31,8 @@ sealed interface BigInt {
 
   infix fun andNot(value: BigInt): BigInt
 
+  infix fun pow(exponent: Int): BigInt
+
   fun inv(): BigInt
 
   fun abs(): BigInt
@@ -34,6 +42,10 @@ sealed interface BigInt {
   fun bitLength(): Int
 
   fun bitCount(): Int
+
+  fun getLowestSetBit(): Int
+
+  fun toString(radix: Int): String
 
   companion object {
     val NegativeOne: BigInt = BigIntImpl(BYTE_NEG_ONE, intArrayOf(1))

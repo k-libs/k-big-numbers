@@ -1,5 +1,7 @@
 package io.klibs.math.big
 
+import kotlin.math.*
+
 private const val MULTIPLY_SQUARE_THRESHOLD = 20
 
 private const val KARATSUBA_THRESHOLD = 80
@@ -8,10 +10,21 @@ private const val KARATSUBA_SQUARE_THRESHOLD = 128
 private const val TOOM_COOK_THRESHOLD = 240
 private const val TOOM_COOK_SQUARE_THRESHOLD = 216
 
+private const val SCHOENHAGE_BASE_CONVERSION_THRESHOLD = 20
+
+private const val ZEROES = "0000000000000000000000000000000000000000000000000000000000000000"
+
+private val LOG_TWO = log2(2.0)
+
+private var powerCache = initPowerCache()
+private val logCache by lazy { initLogCache() }
+private val digitsPerLong by lazy { initDigitsPerLong() }
+private val longRadix by lazy { initLongRadixCache() }
+
 internal class BigIntImpl : BigInt {
 
   private val signum: Byte
-  private val mag: IntArray
+  internal val mag: IntArray
 
   override val isZero: Boolean
     get() = signum == BYTE_ZERO
@@ -25,6 +38,22 @@ internal class BigIntImpl : BigInt {
   constructor(signum: Byte, mag: IntArray) {
     this.signum = signum
     this.mag = mag
+  }
+
+  private constructor(value: Long) {
+    val v = if (value < 0) -value else value
+
+    signum = if (value < 0) -1 else 1
+
+    val highWord = (v ushr 32).toInt()
+    if (highWord == 0) {
+      mag = IntArray(1)
+      mag[0] = v.toInt()
+    } else {
+      mag = IntArray(2)
+      mag[0] = highWord
+      mag[1] = v.toInt()
+    }
   }
 
   private constructor(value: IntArray) {
@@ -92,6 +121,33 @@ internal class BigIntImpl : BigInt {
 
   override fun times(rhs: BigInt): BigInt = times(rhs, false)
 
+  override fun div(rhs: BigInt): BigInt {
+    rhs as BigIntImpl
+    return if (rhs.mag.size < BURNIKEL_ZIEGLER_THRESHOLD || mag.size - rhs.mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+      divideKnuth(rhs)
+    } else {
+      divideBurnikelZiegler(rhs)
+    }
+  }
+
+  override fun rem(rhs: BigInt): BigInt {
+    rhs as BigIntImpl
+    return if (rhs.mag.size < BURNIKEL_ZIEGLER_THRESHOLD || mag.size - rhs.mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+      remainderKnuth(rhs)
+    } else {
+      remainderBurnikelZiegler(rhs)
+    }
+  }
+
+  override fun divideAndRemainder(value: BigInt): Pair<BigInt, BigInt> {
+    value as BigIntImpl
+    return if (value.mag.size < BURNIKEL_ZIEGLER_THRESHOLD || mag.size - value.mag.size < BURNIKEL_ZIEGLER_OFFSET) {
+      divideAndRemainderKnuth(value)
+    } else {
+      divideAndRemainderBurnikelZiegler(value)
+    }
+  }
+
   override fun square(): BigInt = square(false)
 
   override fun shl(n: Int): BigInt {
@@ -152,6 +208,113 @@ internal class BigIntImpl : BigInt {
     return valueOf(result)
   }
 
+  override fun pow(exponent: Int): BigInt {
+    if (exponent < 0)
+      throw ArithmeticException("negative exponent")
+    if (signum == BYTE_ZERO)
+      return if (exponent == 0) BigInt.One else BigInt.Zero
+
+    var partToSquare = abs() as BigIntImpl
+
+    val powersOfTwo = partToSquare.getLowestSetBit()
+    val bitsToShiftLong = powersOfTwo.toLong() * exponent
+
+    if (bitsToShiftLong > Int.MAX_VALUE)
+      reportOverflow()
+
+    val bitsToShift = bitsToShiftLong.toInt()
+
+    val remainingBits: Int
+
+    // Factor the powers of two out quickly by shifting right, if needed.
+
+    // Factor the powers of two out quickly by shifting right, if needed.
+    if (powersOfTwo > 0) {
+      partToSquare = partToSquare.shr(powersOfTwo) as BigIntImpl
+      remainingBits = partToSquare.bitLength()
+      if (remainingBits == 1) {  // Nothing left but +/- 1?
+        return if (signum < 0 && exponent and 1 == 1) {
+          BigInt.NegativeOne shl bitsToShift
+        } else {
+          BigInt.One shl bitsToShift
+        }
+      }
+    } else {
+      remainingBits = partToSquare.bitLength()
+
+      if (remainingBits == 1)
+        return if (signum < 0 && exponent and 1 == 1) BigInt.NegativeOne else BigInt.One
+
+    }
+
+    val scaleFactor = remainingBits.toLong() * exponent
+
+    if (partToSquare.mag.size == 1 && scaleFactor <= 62) {
+      val newSign = if (signum < 0 && exponent and 1 == 1) -1 else 1
+      var result = 1L
+      var baseToPow2 = partToSquare.mag[0].toLong() and LONG_MASK
+      var workingExponent = exponent
+
+      while (workingExponent != 0) {
+        if (workingExponent and 1 == 1)
+          result *= baseToPow2
+
+        if (1.let { workingExponent = workingExponent ushr it; workingExponent } != 0)
+          baseToPow2 *= baseToPow2
+      }
+
+      return if (powersOfTwo > 0) {
+        if (bitsToShift + scaleFactor <= 62) { // Fits in long?
+          valueOf((result shl bitsToShift) * newSign)
+        } else {
+          valueOf(result * newSign).shl(bitsToShift)
+        }
+      } else {
+        valueOf(result * newSign)
+      }
+    } else {
+      if (bitLength().toLong() * exponent / 32 > MAX_MAG_LENGTH)
+        reportOverflow()
+
+      var answer = BigInt.One as BigIntImpl
+      var workingExponent = exponent
+      // Perform exponentiation using repeated squaring trick
+      while (workingExponent != 0) {
+        if (workingExponent and 1 == 1) {
+          answer = answer.times(partToSquare) as BigIntImpl
+        }
+        if (1.let { workingExponent = workingExponent ushr it; workingExponent } != 0) {
+          partToSquare = partToSquare.square() as BigIntImpl
+        }
+      }
+      // Multiply back the (exponentiated) powers of two (quickly,
+      // by shifting left)
+      if (powersOfTwo > 0)
+        answer = answer.shl(bitsToShift) as BigIntImpl
+
+
+      return if (signum < 0 && exponent and 1 == 1) -answer else answer
+    }
+  }
+
+  override fun getLowestSetBit(): Int {
+    var lsb = 0
+
+    if (signum == BYTE_ZERO) {
+      lsb -= 1
+    } else {
+      var i = 0
+      var b: Int
+
+      while (getInt(i).also { b = it } == 0)
+        i++
+
+      lsb += (i shl 5) + b.countTrailingZeroBits()
+    }
+
+    return lsb
+  }
+
   override fun bitLength(): Int {
     val n: Int
     val m   = mag
@@ -201,6 +364,136 @@ internal class BigIntImpl : BigInt {
 
     return bc
   }
+
+  override fun toString(radix: Int): String {
+    if (signum == BYTE_ZERO)
+      return "0"
+
+    val r = if (radix < 2 || radix > 36) 10 else radix
+
+    val abs = abs()
+    val b   = abs.bitLength()
+    val numChars = floor(LOG_TWO * b / logCache[r]).toInt() + 1 + (if (signum < 0) 1 else 0)
+    val sb = StringBuilder(numChars)
+
+    if (signum < 0)
+      sb.append('-')
+
+    toString(abs as BigIntImpl, sb, r, 0)
+
+    return sb.toString()
+  }
+
+  override fun toString() = toString(10)
+
+  private fun toString(u: BigIntImpl, sb: StringBuilder, radix: Int, digits: Int) {
+    if (u.mag.size <= SCHOENHAGE_BASE_CONVERSION_THRESHOLD) {
+      u.smallToString(radix, sb, digits)
+      return
+    }
+
+    val b = u.bitLength()
+    val n = round(log(LOG_TWO * b / logCache[radix], E) / LOG_TWO - 1.0).toInt()
+
+    val v = getRadixConversionCache(radix, n)
+    val results = u.divideAndRemainder(v)
+
+    val expectedDigits = 1 shl n
+
+    toString(results.first as BigIntImpl, sb, radix, digits - expectedDigits)
+    toString(results.second as BigIntImpl, sb, radix, expectedDigits)
+  }
+
+  private fun smallToString(radix: Int, sb: StringBuilder, digits: Int) {
+    if (signum == BYTE_ZERO) {
+      padWithZeros(sb, digits)
+      return
+    }
+
+    val maxNumDigitGroups = (4 * mag.size + 6) / 7
+    val digitGroups = LongArray(maxNumDigitGroups)
+
+    var tmp = this
+    var numGroups = 0
+
+    while (tmp.signum != BYTE_ZERO) {
+      val d = longRadix[radix]
+
+      val q = MutableBigIntImpl()
+      val a = MutableBigIntImpl(tmp.mag)
+      val b = MutableBigIntImpl(d.mag)
+      val r = a.divide(b, q)
+
+      val q2 = q.toBigInt(tmp.signum * d.signum)
+      val r2 = r.toBigInt(tmp.signum * d.signum)
+
+      digitGroups[numGroups++] = r2.longValue()
+      tmp = q2
+    }
+
+    var s = digitGroups[numGroups-1].toString(radix)
+
+    padWithZeros(sb, digits - (s.length + (numGroups - 1) * digitsPerLong[radix]))
+
+    sb.append(s)
+
+    for (i in numGroups - 2 downTo 0) {
+      s = digitGroups[i].toString(radix)
+
+      val numLeadingZeroes = digitsPerLong[radix] - s.length
+      if (numLeadingZeroes != 0)
+        sb.append(ZEROES, 0, numLeadingZeroes)
+
+      sb.append(s)
+    }
+  }
+
+  private fun longValue(): Long {
+    var result = 0L
+
+    for (i in 1 downTo 0)
+      result = (result shl 32) + (getInt(i).toLong() and LONG_MASK)
+
+    return result
+  }
+
+  private fun divideKnuth(value: BigIntImpl): BigIntImpl {
+    val q = MutableBigIntImpl()
+    val a = MutableBigIntImpl(mag)
+    val b = MutableBigIntImpl(value.mag)
+    a.divideKnuth(b, q, false)
+    return q.toBigInt(signum * value.signum)
+  }
+
+  private fun divideBurnikelZiegler(value: BigIntImpl): BigIntImpl =
+    divideAndRemainderBurnikelZiegler(value).first as BigIntImpl
+
+  private fun divideAndRemainderKnuth(value: BigIntImpl): Pair<BigInt, BigInt> {
+    val q = MutableBigIntImpl()
+    val a = MutableBigIntImpl(mag)
+    val b = MutableBigIntImpl(value.mag)
+    val r: MutableBigIntImpl = a.divideKnuth(b, q)
+
+    return q.toBigInt(if (signum == value.signum) 1 else -1) to  r.toBigInt(signum.toInt())
+  }
+
+  private fun divideAndRemainderBurnikelZiegler(value: BigIntImpl): Pair<BigInt, BigInt> {
+    val q = MutableBigIntImpl()
+    val r: MutableBigIntImpl = MutableBigIntImpl(this).divideAndRemainderBurnikelZiegler(MutableBigIntImpl(value), q)
+    val qBigInt = if (q.isZero()) BigInt.Zero as BigIntImpl else q.toBigInt(signum * value.signum)
+    val rBigInt = if (r.isZero()) BigInt.Zero as BigIntImpl else r.toBigInt(signum.toInt())
+    return qBigInt to rBigInt
+  }
+
+  private fun remainderKnuth(value: BigIntImpl): BigIntImpl {
+    val q = MutableBigIntImpl()
+    val a = MutableBigIntImpl(mag)
+    val b = MutableBigIntImpl(value.mag)
+    return a.divideKnuth(b, q).toBigInt(signum.toInt())
+  }
+
+  private fun remainderBurnikelZiegler(rhs: BigIntImpl): BigIntImpl =
+    divideAndRemainderBurnikelZiegler(rhs).second as BigIntImpl
 
   private fun getInt(n: Int): Int {
     if (n < 0)
@@ -509,7 +802,7 @@ internal class BigIntImpl : BigInt {
 
   private fun intLength() = bitLength() ushr 5
 
-  private companion object {
+  companion object {
     private fun multiplyToomCook3(a: BigIntImpl, b: BigIntImpl): BigIntImpl {
       val aLen = a.mag.size
       val bLen = b.mag.size
@@ -566,11 +859,98 @@ internal class BigIntImpl : BigInt {
 
       return (if (x.signum != y.signum) -result else result) as BigIntImpl
     }
+
+    private inline fun valueOf(value: IntArray): BigIntImpl =
+      if (value[0] > 0) BigIntImpl(1, value) else BigIntImpl(value)
+
+    fun valueOf(value: Long): BigIntImpl {
+      return if (value == 0L)
+        BigInt.Zero as BigIntImpl
+      else if (value == -1L)
+        BigInt.NegativeOne as BigIntImpl
+      else if (value == 1L)
+        BigInt.One as BigIntImpl
+      else
+        BigIntImpl(value)
+    }
   }
 }
 
-private inline fun valueOf(value: IntArray): BigIntImpl =
-  if (value[0] > 0) BigIntImpl(1, value) else BigIntImpl(value)
+private fun initLogCache(): DoubleArray {
+  val out = DoubleArray(37)
+  for (i in 2 .. 36)
+    out[i] = log(i.toDouble(), E)
+  return out
+}
+
+private fun initLongRadixCache(): Array<BigIntImpl> {
+  return arrayOf(
+    BigInt.Zero as BigIntImpl, BigInt.Zero, BigIntImpl.valueOf(0x4000000000000000L),
+    BigIntImpl.valueOf(0x383d9170b85ff80bL), BigIntImpl.valueOf(0x4000000000000000L),
+    BigIntImpl.valueOf(0x6765c793fa10079dL), BigIntImpl.valueOf(0x41c21cb8e1000000L),
+    BigIntImpl.valueOf(0x3642798750226111L), BigIntImpl.valueOf(0x1000000000000000L),
+    BigIntImpl.valueOf(0x12bf307ae81ffd59L), BigIntImpl.valueOf(0xde0b6b3a7640000L),
+    BigIntImpl.valueOf(0x4d28cb56c33fa539L), BigIntImpl.valueOf(0x1eca170c00000000L),
+    BigIntImpl.valueOf(0x780c7372621bd74dL), BigIntImpl.valueOf(0x1e39a5057d810000L),
+    BigIntImpl.valueOf(0x5b27ac993df97701L), BigIntImpl.valueOf(0x1000000000000000L),
+    BigIntImpl.valueOf(0x27b95e997e21d9f1L), BigIntImpl.valueOf(0x5da0e1e53c5c8000L),
+    BigIntImpl.valueOf(0xb16a458ef403f19L), BigIntImpl.valueOf(0x16bcc41e90000000L),
+    BigIntImpl.valueOf(0x2d04b7fdd9c0ef49L), BigIntImpl.valueOf(0x5658597bcaa24000L),
+    BigIntImpl.valueOf(0x6feb266931a75b7L), BigIntImpl.valueOf(0xc29e98000000000L),
+    BigIntImpl.valueOf(0x14adf4b7320334b9L), BigIntImpl.valueOf(0x226ed36478bfa000L),
+    BigIntImpl.valueOf(0x383d9170b85ff80bL), BigIntImpl.valueOf(0x5a3c23e39c000000L),
+    BigIntImpl.valueOf(0x4e900abb53e6b71L), BigIntImpl.valueOf(0x7600ec618141000L),
+    BigIntImpl.valueOf(0xaee5720ee830681L), BigIntImpl.valueOf(0x1000000000000000L),
+    BigIntImpl.valueOf(0x172588ad4f5f0981L), BigIntImpl.valueOf(0x211e44f7d02c1000L),
+    BigIntImpl.valueOf(0x2ee56725f06e5c71L), BigIntImpl.valueOf(0x41c21cb8e1000000L)
+  )
+}
+
+private fun initDigitsPerLong(): IntArray =
+  intArrayOf(
+    0, 0, 62, 39, 31, 27, 24, 22, 20, 19, 18, 18, 17, 17, 16, 16, 15, 15, 15,
+    14, 14, 14, 14, 13, 13, 13, 13, 13, 13, 12, 12, 12, 12, 12, 12, 12, 12
+  )
+
+private fun initPowerCache(): Array<Array<BigIntImpl?>?> {
+  val out = arrayOfNulls<Array<BigIntImpl?>>(37)
+  for (i in 2 .. 36)
+    out[i] = arrayOf(BigIntImpl.valueOf(i.toLong()))
+  return out
+}
+
+private fun padWithZeros(sb: StringBuilder, numZeros: Int) {
+  var n = numZeros
+  while (n >= ZEROES.length) {
+    sb.append(ZEROES)
+    n -= ZEROES.length
+  }
+
+  if (numZeros > 0)
+    sb.append(ZEROES, 0, numZeros)
+}
+
+private fun getRadixConversionCache(radix: Int, exponent: Int): BigIntImpl {
+  var cacheLine = powerCache[radix]!!
+
+  if (exponent < cacheLine.size)
+    return cacheLine[exponent]!!
+
+  val oldLength = cacheLine.size
+  cacheLine = cacheLine.copyOf(exponent + 1)
+
+  for (i in oldLength .. exponent)
+    cacheLine[i] = cacheLine[i - 1]!!.pow(2) as BigIntImpl
+
+  var pc = powerCache
+  if (exponent >= pc[radix]!!.size) {
+    pc = pc.copyOf()
+    pc[radix] = cacheLine
+    powerCache = pc
+  }
+
+  return cacheLine[exponent]!!
+}
 
 private fun makePositive(a: IntArray): IntArray {
   var keep = 0
@@ -680,8 +1060,6 @@ private inline fun shiftLeftImplWorker(newArr: IntArray, oldArr: IntArray, newId
 
 private inline fun bitLength(value: IntArray, len: Int): Int =
   if (len == 0) 0 else ((len - 1) shl 5) + bitLengthForInt(value[0])
-
-private inline fun bitLengthForInt(n: Int) = 32 - n.countLeadingZeroBits()
 
 private fun mulAdd(output: IntArray, input: IntArray, offset: Int, len: Int, k: Int): Int {
   if (len > input.size)

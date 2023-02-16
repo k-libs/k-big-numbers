@@ -19,7 +19,7 @@ class ConstructTTest {
     )
 
     for (test in tests)
-      assertEquals(test.expect, bigIntOf(test.input, BigIntRadix.Ten).toPlainString())
+      assertEquals(test.expect, bigIntOf(test.input).toString())
   }
 
   @Test
@@ -42,6 +42,6 @@ class ConstructTTest {
     )
 
     for (test in tests)
-      assertEquals(test.expect, bigIntOf(test.input, BigIntRadix.Ten).toPlainString())
+      assertEquals(test.expect, bigIntOf(test.input).toString())
   }
 }
