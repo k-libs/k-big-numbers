@@ -26,31 +26,118 @@ Heavily based on Java's `BigInteger` type.
 
 == Usage
 
+=== Construction
+
 [source, kotlin]
 ----
-val b1 = "92233720368547758079223372036854775807".toBigInt()
-val b2 = bigIntOf("92233720368547758079223372036854775807")
+// From String to BigInt
+"0".toBigInt()
+bigIntOf("0")
+
+// From Byte to BigInt
+0.toByte().toBigInt()
+bigIntOf(0.toByte())
+
+// From Short to BigInt
+0.toShort().toBigInt()
+bigIntOf(0.toShort())
+
+// From Int to BigInt
+0.toBigInt()
+bigIntOf(0)
+
+// From Long to BigInt
+0L.toBigInt()
+bigIntOf(0L)
+
+// From UByte to BigInt
+0.toUByte().toBigInt()
+bigIntOf(0.toUByte())
+
+// From UShort to BigInt
+0.toUShort().toBigInt()
+bigIntOf(0.toUShort())
+
+// From UInt to BigInt
+0u.toBigInt()
+bigIntOf(0u)
+
+// From ULong to BigInt
+0uL.toBigInt()
+bigIntOf(0uL)
+----
+
+=== Operations
+
+[source, kotlin]
+----
+val b1: BigInt
+val b2: BigInt
 var b3: BigInt
 
-b3 = b1 * b2
+// Addition
 b3 = b1 + b2
+b3 = b1 + 2
+
+// Subtraction
 b3 = b1 - b2
+b3 = b1 - 2
+
+// Multiplication
+b3 = b1 * b2
+b3 = b1 * 2
+
+// Division
 b3 = b1 / b2
+b3 = b1 / 2
+
+// Modulus
 b3 = b1 % b2
-b3 = -b1
+b3 = b1 % 2
 
-b3 = b1 shl 2
-b3 = b2 shr 3
-b3 = b1 and b2
-b3 = b1 or b2
-b3 = b1 xor b2
-b3 = b1 andNot b2
-
+// Exponent
 b3 = b1 pow 2
 
-b3 = b1.inv()
-b3 = b1.abs()
-b3 = b1.square()
+// Negate
+b3 = -b1
 
-println(b3.toString(radix = 16))
+// Bit Shift
+b3 = b1 shl 2
+b3 = b2 shr 3
+
+// Bitwise AND
+b3 = b1 and b2
+b3 = b1 and 2
+
+// Bitwise OR
+b3 = b1 or b2
+b3 = b1 or 2
+
+// Bitwise XOR
+b3 = b1 xor b2
+b3 = b1 xor 2
+
+// Bitwise AND NOT
+b3 = b1 andNot b2
+b3 = b1 andNot 2
+
+// Bitwise NOT
+b3 = b1.inv()
+
+// Absolute Value
+b3 = b1.abs()
+
+// Pow 2
+b3 = b1.square()
 ----
+
+== Version History
+
+[%headers, cols="1m,1,8"]
+|===
+| Version | Docs | Description
+
+| v0.1.0
+| https://{gh-group}.github.io/{gh-name}/dokka/0.1.0/{lib-name}/{lib-package}/index.html[Dokka]
+| Initial Release
+|===
