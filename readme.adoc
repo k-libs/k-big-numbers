@@ -30,16 +30,27 @@ Heavily based on Java's `BigInteger` type.
 ----
 val b1 = "92233720368547758079223372036854775807".toBigInt()
 val b2 = bigIntOf("92233720368547758079223372036854775807")
+var b3: BigInt
 
-b1 * b2
-b1 + b2
-b1 - b2
-b1 / b2
-b1 % b2
+b3 = b1 * b2
+b3 = b1 + b2
+b3 = b1 - b2
+b3 = b1 / b2
+b3 = b1 % b2
+b3 = -b1
 
-b1 shl 2
-b2 shr 3
+b3 = b1 shl 2
+b3 = b2 shr 3
+b3 = b1 and b2
+b3 = b1 or b2
+b3 = b1 xor b2
+b3 = b1 andNot b2
 
+b3 = b1 pow 2
 
+b3 = b1.inv()
+b3 = b1.abs()
+b3 = b1.square()
 
+println(b3.toString(radix = 16))
 ----

@@ -1,0 +1,53 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:io.klibs.math.big////PointingToDeclaration/big-numbers/io.klibs.math.big/index.html
+$dokka.location:io.klibs.math.big//bigIntOf/#kotlin.Byte/PointingToDeclaration/big-numbers/io.klibs.math.big/big-int-of.html
+$dokka.location:io.klibs.math.big//bigIntOf/#kotlin.Int/PointingToDeclaration/big-numbers/io.klibs.math.big/big-int-of.html
+$dokka.location:io.klibs.math.big//bigIntOf/#kotlin.Long/PointingToDeclaration/big-numbers/io.klibs.math.big/big-int-of.html
+$dokka.location:io.klibs.math.big//bigIntOf/#kotlin.Short/PointingToDeclaration/big-numbers/io.klibs.math.big/big-int-of.html
+$dokka.location:io.klibs.math.big//bigIntOf/#kotlin.String#kotlin.Int/PointingToDeclaration/big-numbers/io.klibs.math.big/big-int-of.html
+$dokka.location:io.klibs.math.big//toBigInt/kotlin.Byte#/PointingToDeclaration/big-numbers/io.klibs.math.big/to-big-int.html
+$dokka.location:io.klibs.math.big//toBigInt/kotlin.Int#/PointingToDeclaration/big-numbers/io.klibs.math.big/to-big-int.html
+$dokka.location:io.klibs.math.big//toBigInt/kotlin.Long#/PointingToDeclaration/big-numbers/io.klibs.math.big/to-big-int.html
+$dokka.location:io.klibs.math.big//toBigInt/kotlin.Short#/PointingToDeclaration/big-numbers/io.klibs.math.big/to-big-int.html
+$dokka.location:io.klibs.math.big//toBigInt/kotlin.String#kotlin.Int/PointingToDeclaration/big-numbers/io.klibs.math.big/to-big-int.html
+$dokka.location:io.klibs.math.big/BigInt.Companion///PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/-companion/index.html
+$dokka.location:io.klibs.math.big/BigInt.Companion/NegativeOne/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/-companion/-negative-one.html
+$dokka.location:io.klibs.math.big/BigInt.Companion/One/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/-companion/-one.html
+$dokka.location:io.klibs.math.big/BigInt.Companion/Ten/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/-companion/-ten.html
+$dokka.location:io.klibs.math.big/BigInt.Companion/Zero/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/-companion/-zero.html
+$dokka.location:io.klibs.math.big/BigInt///PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/index.html
+$dokka.location:io.klibs.math.big/BigInt/abs/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/abs.html
+$dokka.location:io.klibs.math.big/BigInt/and/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/and.html
+$dokka.location:io.klibs.math.big/BigInt/andNot/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/and-not.html
+$dokka.location:io.klibs.math.big/BigInt/bitCount/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/bit-count.html
+$dokka.location:io.klibs.math.big/BigInt/bitLength/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/bit-length.html
+$dokka.location:io.klibs.math.big/BigInt/div/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/div.html
+$dokka.location:io.klibs.math.big/BigInt/divideAndRemainder/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/divide-and-remainder.html
+$dokka.location:io.klibs.math.big/BigInt/fitsByte/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/fits-byte.html
+$dokka.location:io.klibs.math.big/BigInt/fitsInt/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/fits-int.html
+$dokka.location:io.klibs.math.big/BigInt/fitsLong/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/fits-long.html
+$dokka.location:io.klibs.math.big/BigInt/fitsShort/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/fits-short.html
+$dokka.location:io.klibs.math.big/BigInt/getLowestSetBit/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/get-lowest-set-bit.html
+$dokka.location:io.klibs.math.big/BigInt/inv/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/inv.html
+$dokka.location:io.klibs.math.big/BigInt/isNegative/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/is-negative.html
+$dokka.location:io.klibs.math.big/BigInt/isPositive/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/is-positive.html
+$dokka.location:io.klibs.math.big/BigInt/isZero/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/is-zero.html
+$dokka.location:io.klibs.math.big/BigInt/minus/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/minus.html
+$dokka.location:io.klibs.math.big/BigInt/or/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/or.html
+$dokka.location:io.klibs.math.big/BigInt/plus/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/plus.html
+$dokka.location:io.klibs.math.big/BigInt/pow/#kotlin.Int/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/pow.html
+$dokka.location:io.klibs.math.big/BigInt/rem/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/rem.html
+$dokka.location:io.klibs.math.big/BigInt/shl/#kotlin.Int/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/shl.html
+$dokka.location:io.klibs.math.big/BigInt/shr/#kotlin.Int/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/shr.html
+$dokka.location:io.klibs.math.big/BigInt/square/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/square.html
+$dokka.location:io.klibs.math.big/BigInt/times/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/times.html
+$dokka.location:io.klibs.math.big/BigInt/toByte/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/to-byte.html
+$dokka.location:io.klibs.math.big/BigInt/toInt/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/to-int.html
+$dokka.location:io.klibs.math.big/BigInt/toLong/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/to-long.html
+$dokka.location:io.klibs.math.big/BigInt/toShort/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/to-short.html
+$dokka.location:io.klibs.math.big/BigInt/toString/#kotlin.Int/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/to-string.html
+$dokka.location:io.klibs.math.big/BigInt/unaryMinus/#/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/unary-minus.html
+$dokka.location:io.klibs.math.big/BigInt/xor/#io.klibs.math.big.BigInt/PointingToDeclaration/big-numbers/io.klibs.math.big/-big-int/xor.html
+io.klibs.math.big
+
