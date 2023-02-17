@@ -2,7 +2,7 @@
 :source-highlighter: highlightjs
 :gh-group: k-libs
 :gh-name: k-big-numbers
-:lib-package: io.klibs.math
+:lib-package: io.klibs.math.big
 :lib-group: io.k-libs
 :lib-name: big-numbers
 :lib-version: 0.1.0
