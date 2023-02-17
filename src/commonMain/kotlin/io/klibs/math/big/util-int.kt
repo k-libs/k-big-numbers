@@ -1,6 +1,7 @@
 package io.klibs.math.big
 
 internal inline fun max(a: Int, b: Int) = if (a > b) a else b
+internal inline fun max(a: Long, b: Long) = if (a > b) a else b
 
 internal inline fun min(a: Int, b: Int) = if (a < b) a else b
 

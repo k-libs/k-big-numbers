@@ -71,6 +71,39 @@ internal class BigIntImpl : BigInt {
     checkRange(mag)
   }
 
+  override fun fitsByte(): Boolean =
+    if (signum == BYTE_ZERO)
+      true
+    else if (mag.size == 1)
+      bitLength() <= 7
+    else
+      false
+
+  override fun fitsShort(): Boolean =
+    if (signum == BYTE_ZERO)
+      true
+    else if (mag.size == 1)
+      bitLength() <= 15
+    else
+      false
+
+  override fun fitsInt() =
+    if (signum == BYTE_ZERO) {
+      true
+    } else if (mag.size == 1) {
+      bitLength() <= 31
+    } else {
+      false
+    }
+
+  override fun fitsLong() =
+    if (signum == BYTE_ZERO)
+      true
+    else if (mag.size == 2)
+      bitLength() <= 63
+    else
+      mag.size == 1
+
   override fun plus(rhs: BigInt): BigInt {
     if (rhs.isZero)
       return this
@@ -404,9 +437,9 @@ internal class BigIntImpl : BigInt {
     toString(results.second as BigIntImpl, sb, radix, expectedDigits)
   }
 
-  private fun smallToString(radix: Int, sb: StringBuilder, digits: Int) {
+  private fun smallToString(radix: Int, buf: StringBuilder, digits: Int) {
     if (signum == BYTE_ZERO) {
-      padWithZeros(sb, digits)
+      padWithZeros(buf, digits)
       return
     }
 
@@ -415,36 +448,37 @@ internal class BigIntImpl : BigInt {
 
     var tmp = this
     var numGroups = 0
-
     while (tmp.signum != BYTE_ZERO) {
       val d = longRadix[radix]
-
       val q = MutableBigIntImpl()
       val a = MutableBigIntImpl(tmp.mag)
       val b = MutableBigIntImpl(d.mag)
       val r = a.divide(b, q)
-
       val q2 = q.toBigInt(tmp.signum * d.signum)
       val r2 = r.toBigInt(tmp.signum * d.signum)
-
       digitGroups[numGroups++] = r2.longValue()
       tmp = q2
     }
 
-    var s = digitGroups[numGroups-1].toString(radix)
+    var s: String = digitGroups[numGroups - 1].toString(radix)
 
-    padWithZeros(sb, digits - (s.length + (numGroups - 1) * digitsPerLong[radix]))
-
-    sb.append(s)
+    padWithZeros(buf, digits - (s.length + (numGroups - 1) * digitsPerLong[radix]))
+    if (s.startsWith('-'))
+      buf.append(s, 1, s.length)
+    else
+      buf.append(s)
 
     for (i in numGroups - 2 downTo 0) {
+
       s = digitGroups[i].toString(radix)
-
-      val numLeadingZeroes = digitsPerLong[radix] - s.length
-      if (numLeadingZeroes != 0)
-        sb.append(ZEROES, 0, numLeadingZeroes)
-
-      sb.append(s)
+      val numLeadingZeros: Int = digitsPerLong[radix] - s.length
+      if (numLeadingZeros != 0) {
+        buf.append(ZEROES, 0, numLeadingZeros)
+      }
+      if (s.startsWith('-'))
+        buf.append(s, 1, s.length)
+      else
+        buf.append(s)
     }
   }
 
@@ -1287,6 +1321,9 @@ internal fun trustedStripLeadingZeroInts(v: IntArray): IntArray {
   val vlen = v.size
   var keep = 0
 
+  // Find first nonzero byte
+
+  // Find first nonzero byte
   while (keep < vlen && v[keep] == 0)
     keep++
 

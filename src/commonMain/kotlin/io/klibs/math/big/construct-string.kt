@@ -24,99 +24,95 @@ fun bigIntOf(value: String, radix: Int = 10): BigInt {
   if (radix < 2 || radix > 36)
     throw NumberFormatException("radix value ($radix) is not in the valid range of 2..36")
 
-  val numDigits: Int
-  var i = 0
+  var cursor = 0
+  var numDigits: Int
   val len = s.length
 
-  var sign: Byte = 1
-  val si1 = s.lastIndexOf('-')
-  val si2 = s.lastIndexOf('+')
+  var sign = 1
+  var index1 = s.lastIndexOf('-')
+  var index2 = s.lastIndexOf('+')
 
-  if (si1 >= 0) {
-    if (si1 != 0)
-      throw NumberFormatException("illegal embedded sign character")
-
+  if (index1 >= 0) {
+    if (index1 != 0 || index2 >= 0) {
+      throw NumberFormatException("Illegal embedded sign character")
+    }
     sign = -1
-    i++
-  } else if (si2 >= 0) {
-    if (si2 != 0)
-      throw NumberFormatException("illegal embedded sign character")
-
-    i++
+    cursor = 1
+  } else if (index2 >= 0) {
+    if (index2 != 0) {
+      throw NumberFormatException("Illegal embedded sign character")
+    }
+    cursor = 1
   }
 
-  if (i == len)
-    throw NumberFormatException("attempted to construct a BigInt value from a CharSequence containing only a sign indicator")
+  if (cursor == len)
+    throw NumberFormatException("Zero length BigInteger")
 
-  // Skip leading zeros
-  while (i < len && s[i].digitToInt(radix) == 0)
-    i++
+  while (cursor < len && (s[cursor].digitToIntOrNull(radix) ?: -1) == 0)
+    cursor++
 
-  // if it was all zeros then ignore the sign and return a zero
-  if (i == len)
+  val signum: Byte
+  val mag: IntArray
+
+  if (cursor == len)
     return BigInt.Zero
 
-  numDigits = len - i
-  val numBits: Long = numDigits.toLong() * bitsPerDigit[radix]
+  numDigits = len - cursor
+  signum = sign.toByte()
 
+  val numBits: Long = (numDigits * bitsPerDigit[radix] + 1).toLong()
   if (numBits + 31 >= 1L shl 32)
     reportOverflow()
 
-  val numWords: Int = ((numBits + 31) ushr 5).toInt()
-  var magnitude = IntArray(numWords)
+  val numWords = (numBits + 31).toInt() ushr 5
+  val magnitude = IntArray(numWords)
 
-  var firstGroupLen = numDigits % digitsPerInt[radix]
+  var firstGroupLen: Int = numDigits % digitsPerInt[radix]
   if (firstGroupLen == 0)
     firstGroupLen = digitsPerInt[radix].toInt()
 
-  // Process first digit group (possibly a short one)
-  var group = s.substring(i, i + firstGroupLen)
-  i += firstGroupLen
-
+  var group: String = s.substring(cursor, firstGroupLen.let { cursor += it; cursor })
   magnitude[numWords - 1] = group.toInt(radix)
   if (magnitude[numWords - 1] < 0)
-    throw NumberFormatException("illegal digit")
+    throw NumberFormatException("Illegal digit")
 
-  // Process remaining digit groups
-  val superRadix = intRadix[radix]
-  var groupVal = 0
-  while (i < len) {
-    group = s.substring(i, i + digitsPerInt[radix])
-    i += digitsPerInt[radix]
+  val superRadix: Int = intRadix[radix]
+  var groupVal: Int
 
+  while (cursor < len) {
+    group = s.substring(cursor, digitsPerInt[radix].let { cursor += it; cursor })
     groupVal = group.toInt(radix)
+
     if (groupVal < 0)
-      throw NumberFormatException("illegal digit")
+      throw NumberFormatException("Illegal digit")
 
     destructiveMulAdd(magnitude, superRadix, groupVal)
   }
 
-  magnitude = trustedStripLeadingZeroInts(magnitude)
-  checkRange(magnitude)
+  mag = trustedStripLeadingZeroInts(magnitude)
+  checkRange(mag)
 
-  return BigIntImpl(sign, magnitude)
+  return BigIntImpl(signum, mag)
 }
 
 fun String.toBigInt(radix: Int = 10) = bigIntOf(this, radix)
 
 private fun destructiveMulAdd(x: IntArray, y: Int, z: Int) {
-  val yLong = y.toLong() and LONG_MASK
-  val zLong = z.toLong() and LONG_MASK
-  val len   = x.size
+  val ylong = y.toLong() and LONG_MASK
+  val zlong = z.toLong() and LONG_MASK
+  val len = x.size
 
   var product: Long
-  var carry = 0L
-
+  var carry: Long = 0
   for (i in len - 1 downTo 0) {
-    product = yLong * (x[i].toLong() and LONG_MASK) + carry
+    product = ylong * (x[i].toLong() and LONG_MASK) + carry
     x[i] = product.toInt()
     carry = product ushr 32
   }
 
-  var sum = (x[len-1].toLong() and LONG_MASK) + zLong
-  x[len-1] = sum.toInt()
+  var sum = (x[len - 1].toLong() and LONG_MASK) + zlong
+  x[len - 1] = sum.toInt()
   carry = sum ushr 32
-
   for (i in len - 2 downTo 0) {
     sum = (x[i].toLong() and LONG_MASK) + carry
     x[i] = sum.toInt()

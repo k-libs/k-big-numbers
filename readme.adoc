@@ -1,26 +1,45 @@
 = K-Libs Multi-Platform Library Repo Template
 :source-highlighter: highlightjs
 :gh-group: k-libs
-:gh-name: k-some-lib
-:lib-package: io.klibs
+:gh-name: k-big-numbers
+:lib-package: io.klibs.math
 :lib-group: io.k-libs
-:lib-name: some-lib
+:lib-name: big-numbers
 :lib-version: 0.1.0
 :lib-feature: 0.1.0
 
-////
 image:https://img.shields.io/github/license/{gh-group}/{gh-name}[title="License"]
 image:https://img.shields.io/badge/docs-dokka-ff69b4[link="https://{gh-group}.github.io/{gh-name}/dokka/{lib-feature}/{lib-name}/{lib-package}/index.html"]
 image:https://img.shields.io/maven-central/v/{lib-group}/{lib-name}[link="https://search.maven.org/artifact/{lib-group}/{lib-name}"]
-////
 
-A template repository with the boilerplate taken care of.
+BigInt implementation.
 
-////
+Heavily based on Java's `BigInteger` type.
+
 == Import
 
 [source, kotlin, subs="attributes"]
 ----
   implementation("{lib-group}:{lib-name}:{lib-version}")
 ----
-////
+
+
+== Usage
+
+[source, kotlin]
+----
+val b1 = "92233720368547758079223372036854775807".toBigInt()
+val b2 = bigIntOf("92233720368547758079223372036854775807")
+
+b1 * b2
+b1 + b2
+b1 - b2
+b1 / b2
+b1 % b2
+
+b1 shl 2
+b2 shr 3
+
+
+
+----
