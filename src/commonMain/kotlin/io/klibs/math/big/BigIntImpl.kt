@@ -104,6 +104,107 @@ internal class BigIntImpl : BigInt {
     else
       mag.size == 1
 
+  override fun fitsUByte() =
+    when {
+      signum < 0 -> false
+      signum > 0 -> bitLength() <= 8
+      else       -> true
+    }
+
+  override fun fitsUShort() =
+    when {
+      signum < 0 -> false
+      signum > 0 -> bitLength() <= 16
+      else       -> true
+    }
+
+  override fun fitsUInt() =
+    when {
+      signum < 0 -> false
+      signum > 0 -> bitLength() <= 32
+      else       -> true
+    }
+
+  override fun fitsULong() =
+    when {
+      signum < 0 -> false
+      signum > 0 -> bitLength() <= 64
+      else       -> true
+    }
+
+  override fun toByte() =
+    if (fitsByte())
+      when {
+        signum < 0 -> (-mag[0]).toByte()
+        signum > 0 -> mag[0].toByte()
+        else       -> 0.toByte()
+      }
+    else
+      throw NumberCastException("cannot cast value $this as a Byte")
+
+  override fun toShort() =
+    if (fitsShort())
+      when {
+        signum < 0 -> (-mag[0]).toShort()
+        signum > 0 -> mag[0].toShort()
+        else       -> 0.toShort()
+      }
+    else
+      throw NumberCastException("cannot cast value $this as a Short")
+
+  override fun toInt() =
+    if (fitsInt())
+      when {
+        signum < 0 -> if (mag[0] > 0) -mag[0] else mag[0]
+        signum > 0 -> mag[0]
+        else       -> 0
+      }
+    else
+      throw NumberCastException("cannot cast value $this as an Int")
+
+  override fun toLong() =
+    if (fitsLong())
+      longValue()
+    else
+      throw NumberCastException("cannot cast value $this as a Long")
+
+  override fun toUByte() =
+    if (fitsUByte())
+      when (signum) {
+        BYTE_ZERO -> 0.toUByte()
+        else      -> mag[0].toUByte()
+      }
+    else
+      throw NumberCastException("cannot cast value $this as a UByte")
+
+  override fun toUShort() =
+    if (fitsUShort())
+      when (signum) {
+        BYTE_ZERO -> 0.toUShort()
+        else      -> mag[0].toUShort()
+      }
+    else
+      throw NumberCastException("cannot cast value $this as a UShort")
+
+  override fun toUInt() =
+    if (fitsUInt())
+      when (mag.size) {
+        1    -> mag[0].toUInt()
+        else -> 0u
+      }
+    else
+      throw NumberCastException("cannot cast value $this as a UInt")
+
+  override fun toULong() =
+    if (fitsULong())
+      when (mag.size) {
+        1    -> mag[0].toULong()
+        2    -> longValue().toULong()
+        else -> 0uL
+      }
+    else
+      throw NumberCastException("cannot cast value $this as a ULong")
+
   override fun plus(rhs: BigInt): BigInt {
     if (rhs.isZero)
       return this

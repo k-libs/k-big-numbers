@@ -2,6 +2,7 @@ package io.klibs.math.big
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class MutableBigIntImplTest {
 
@@ -70,7 +71,151 @@ class MutableBigIntImplTest {
   }
 
   @Test
-  fun plusAssign_positives_1() {
+  fun fitsUByte_1() {
+    data class Test(val input: String, val expect: Boolean)
 
+    val tests = arrayOf(
+      Test("0", true),
+      Test("255", true),
+      Test("-1", false),
+      Test("256", false),
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, test.input.toBigInt().fitsUByte(), "failed on input: ${test.input}")
   }
+
+  @Test
+  fun toUByte_1() {
+    data class Test(val input: String, val expect: UByte)
+
+    val tests = arrayOf(
+      Test("0", 0u),
+      Test("1", 1u),
+      Test("255", 255u),
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, test.input.toBigInt().toUByte())
+  }
+
+  @Test
+  fun toUByte_2() {
+    val tests = arrayOf("-1", "256")
+
+    for (test in tests)
+      assertFailsWith<NumberCastException> { test.toBigInt().toUByte() }
+  }
+
+  @Test
+  fun fitsUShort_1() {
+    data class Test(val input: String, val expect: Boolean)
+
+    val tests = arrayOf(
+      Test("0", true),
+      Test("65535", true),
+      Test("-1", false),
+      Test("65536", false),
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, test.input.toBigInt().fitsUShort(), "failed on input: ${test.input}")
+  }
+
+  @Test
+  fun toUShort_1() {
+    data class Test(val input: String, val expect: UShort)
+
+    val tests = arrayOf(
+      Test("0", 0u),
+      Test("1", 1u),
+      Test("65535", 65535u),
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, test.input.toBigInt().toUShort())
+  }
+
+  @Test
+  fun toUShort_2() {
+    val tests = arrayOf("-1", "65536")
+
+    for (test in tests)
+      assertFailsWith<NumberCastException> { test.toBigInt().toUShort() }
+  }
+
+  @Test
+  fun fitsUInt_1() {
+    data class Test(val input: String, val expect: Boolean)
+
+    val tests = arrayOf(
+      Test("0", true),
+      Test("4294967295", true),
+      Test("-1", false),
+      Test("4294967296", false),
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, test.input.toBigInt().fitsUInt(), "failed on input: ${test.input}")
+  }
+
+  @Test
+  fun toUInt_1() {
+    data class Test(val input: String, val expect: UInt)
+
+    val tests = arrayOf(
+      Test("0", 0u),
+      Test("1", 1u),
+      Test("4294967295", 4294967295u),
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, test.input.toBigInt().toUInt())
+  }
+
+  @Test
+  fun toUInt_2() {
+    val tests = arrayOf("-1", "4294967296")
+
+    for (test in tests)
+      assertFailsWith<NumberCastException> { test.toBigInt().toUInt() }
+  }
+
+  @Test
+  fun fitsULong_1() {
+    data class Test(val input: String, val expect: Boolean)
+
+    val tests = arrayOf(
+      Test("0", true),
+      Test("18446744073709551615", true),
+      Test("-1", false),
+      Test("18446744073709551616", false),
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, test.input.toBigInt().fitsULong(), "failed on input: ${test.input}")
+  }
+
+  @Test
+  fun toULong_1() {
+    data class Test(val input: String, val expect: ULong)
+
+    val tests = arrayOf(
+      Test("0", 0u),
+      Test("1", 1u),
+      Test("18446744073709551615", 18446744073709551615u),
+    )
+
+    for (test in tests)
+      assertEquals(test.expect, test.input.toBigInt().toULong())
+  }
+
+  @Test
+  fun toULong_2() {
+    val tests = arrayOf("-1", "18446744073709551616")
+
+    for (test in tests)
+      assertFailsWith<NumberCastException> { test.toBigInt().toULong() }
+  }
+
 }

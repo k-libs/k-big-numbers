@@ -93,6 +93,16 @@ sealed interface BigInt {
    */
   fun toLong(): Long
 
+  fun fitsUByte(): Boolean
+  fun fitsUShort(): Boolean
+  fun fitsUInt(): Boolean
+  fun fitsULong(): Boolean
+
+  fun toUByte(): UByte
+  fun toUShort(): UShort
+  fun toUInt(): UInt
+  fun toULong(): ULong
+
   /**
    * Returns a new [BigInt] wrapping the sum of the value of this `BigInt` and
    * the value of [rhs].
