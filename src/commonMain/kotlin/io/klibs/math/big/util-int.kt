@@ -12,4 +12,11 @@ internal inline fun checkFromToIndex(from: Int, to: Int, len: Int): Int {
   return from
 }
 
+internal inline fun checkFromIndexSize(fromIndex: Int, size: Int, length: Int): Int {
+  if (length or fromIndex or size < 0 || size > length - fromIndex)
+    throw IndexOutOfBoundsException()
+
+  return fromIndex
+}
+
 internal inline fun bitLengthForInt(n: Int) = 32 - n.countLeadingZeroBits()

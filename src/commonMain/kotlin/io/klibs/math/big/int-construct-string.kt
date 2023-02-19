@@ -119,3 +119,72 @@ private fun destructiveMulAdd(x: IntArray, y: Int, z: Int) {
     carry = sum ushr 32
   }
 }
+
+internal fun bigIntOf(value: CharArray, sign: Int, len: Int): BigInt {
+  var cursor = 0
+  val numDigits: Int
+  val signum: Byte
+  val mag: IntArray
+
+  // Skip leading zeros and compute number of digits in magnitude
+  while (cursor < len && (value[cursor].digitToIntOrNull() ?: -1) == 0) {
+    cursor++
+  }
+
+  if (cursor == len)
+    return BigInt.Zero
+
+  numDigits = len - cursor
+  signum = sign.toByte()
+
+  val numWords: Int
+  numWords = if (len < 10) {
+    1
+  } else {
+    val numBits: Long = ((numDigits * bitsPerDigit[10] ushr 10) + 1).toLong()
+    if (numBits + 31 >= 1L shl 32) {
+      reportOverflow()
+    }
+    (numBits + 31).toInt() ushr 5
+  }
+
+  val magnitude = IntArray(numWords)
+
+  // Process first (potentially short) digit group
+  var firstGroupLen: Int = numDigits % digitsPerInt[10]
+
+  if (firstGroupLen == 0)
+    firstGroupLen = digitsPerInt[10].toInt()
+
+  magnitude[numWords - 1] = parseInt(value, cursor, firstGroupLen.let { cursor += it; cursor })
+
+  // Process remaining digit groups
+  while (cursor < len) {
+    val groupVal: Int = parseInt(value, cursor, digitsPerInt.get(10).let { cursor += it; cursor })
+    destructiveMulAdd(magnitude, intRadix.get(10), groupVal)
+  }
+
+  mag = trustedStripLeadingZeroInts(magnitude)
+
+  checkRange(mag)
+
+  return BigIntImpl(signum, mag)
+}
+
+private fun parseInt(source: CharArray, start: Int, end: Int): Int {
+  var start = start
+  var result = source[start++].digitToIntOrNull() ?: -1
+
+  if (result == -1)
+    throw NumberFormatException(source.concatToString())
+
+  for (index in start until end) {
+    val nextVal = source[index].digitToIntOrNull() ?: -1
+
+    if (nextVal == -1)
+      throw NumberFormatException(source.concatToString())
+
+    result = 10 * result + nextVal
+  }
+  return result
+}

@@ -33,6 +33,10 @@ internal class MutableBigIntImpl {
     this.value = value.value.copyOfRange(value.offset, value.offset + intLen)
   }
 
+  fun isOdd(): Boolean {
+    return if (isZero()) false else value[offset + intLen - 1] and 1 == 1
+  }
+
   fun divide(b: MutableBigIntImpl, quotient: MutableBigIntImpl): MutableBigIntImpl =
     divide(b, quotient, true)!!
 
@@ -909,6 +913,163 @@ internal class MutableBigIntImpl {
     add(a)
   }
 
+  fun divide(v: Long, quotient: MutableBigIntImpl): Long {
+    var v = v
+    if (v == 0L) throw ArithmeticException("BigInteger divide by zero")
+
+    // Dividend is zero
+    if (intLen == 0) {
+      quotient.offset = 0
+      quotient.intLen = quotient.offset
+      return 0
+    }
+    if (v < 0) v = -v
+    val d = (v ushr 32).toInt()
+    quotient.clear()
+    // Special case on word divisor
+    return if (d == 0)
+      divideOneWord(v.toInt(), quotient).toLong() and LONG_MASK
+    else {
+      divideLongMagnitude(v, quotient).toLong()
+    }
+  }
+
+  private fun divideLongMagnitude(ldivisor: Long, quotient: MutableBigIntImpl): MutableBigIntImpl {
+
+    var ldivisor = ldivisor
+    val rem = MutableBigIntImpl(IntArray(intLen + 1))
+
+    value.copyInto(rem.value, 1, offset, intLen)
+
+    rem.intLen = intLen
+    rem.offset = 1
+
+    val nlen: Int = rem.intLen
+    val limit = nlen - 2 + 1
+
+    if (quotient.value.size < limit) {
+      quotient.value = IntArray(limit)
+      quotient.offset = 0
+    }
+
+    quotient.intLen = limit
+
+    val q: IntArray = quotient.value
+
+    // D1 normalize the divisor
+    val shift: Int = ldivisor.countLeadingZeroBits()
+    if (shift > 0) {
+      ldivisor = ldivisor shl shift
+      rem.leftShift(shift)
+    }
+
+    // Must insert leading 0 in rem if its length did not change
+    if (rem.intLen == nlen) {
+      rem.offset = 0
+      rem.value[0] = 0
+      rem.intLen++
+    }
+
+    val dh = (ldivisor ushr 32).toInt()
+    val dhLong = dh.toLong() and LONG_MASK
+    val dl = (ldivisor and LONG_MASK).toInt()
+
+
+    for (j in 0 until limit) {
+      var qhat: Int
+      var qrem: Int
+      var skipCorrection = false
+      val nh: Int = rem.value.get(j + rem.offset)
+      val nh2 = nh + -0x80000000
+      val nm: Int = rem.value.get(j + 1 + rem.offset)
+
+      if (nh == dh) {
+        qhat = 0.inv()
+        qrem = nh + nm
+        skipCorrection = qrem + -0x80000000 < nh2
+      } else {
+        val nChunk = nh.toLong() shl 32 or (nm.toLong() and LONG_MASK)
+
+        if (nChunk >= 0) {
+          qhat = (nChunk / dhLong).toInt()
+          qrem = (nChunk - qhat * dhLong).toInt()
+        } else {
+          val tmp: Long = divWord(nChunk, dh)
+          qhat = (tmp and LONG_MASK).toInt()
+          qrem = (tmp ushr 32).toInt()
+        }
+      }
+
+      if (qhat == 0)
+        continue
+
+      if (!skipCorrection) {
+        val nl: Long = rem.value.get(j + 2 + rem.offset).toLong() and LONG_MASK
+        var rs = qrem.toLong() and LONG_MASK shl 32 or nl
+        var estProduct = (dl.toLong() and LONG_MASK) * (qhat.toLong() and LONG_MASK)
+
+        if (unsignedLongCompare(estProduct, rs)) {
+          qhat--
+          qrem = ((qrem.toLong() and LONG_MASK) + dhLong).toInt()
+          if (qrem.toLong() and LONG_MASK >= dhLong) {
+            estProduct -= dl.toLong() and LONG_MASK
+            rs = qrem.toLong() and LONG_MASK shl 32 or nl
+            if (unsignedLongCompare(estProduct, rs)) qhat--
+          }
+        }
+      }
+
+      rem.value[j + rem.offset] = 0
+      val borrow: Int = mulsubLong(rem.value, dh, dl, qhat, j + rem.offset)
+
+      if (borrow + -0x80000000 > nh2) {
+        // D6 Add back
+        divaddLong(dh, dl, rem.value, j + 1 + rem.offset)
+        qhat--
+      }
+
+      q[j] = qhat
+    }
+
+    if (shift > 0)
+      rem.rightShift(shift)
+
+    quotient.normalize()
+    rem.normalize()
+    return rem
+  }
+
+  private fun mulsubLong(q: IntArray, dh: Int, dl: Int, x: Int, offset: Int): Int {
+    var offset = offset
+    val xLong = x.toLong() and LONG_MASK
+
+    offset += 2
+
+    var product = (dl.toLong() and LONG_MASK) * xLong
+    var difference = q[offset] - product
+
+    q[offset--] = difference.toInt()
+
+    var carry = ((product ushr 32) + if (difference and LONG_MASK > product.toInt().inv().toLong() and LONG_MASK) 1 else 0)
+
+    product = (dh.toLong() and LONG_MASK) * xLong + carry
+    difference = q[offset] - product
+    q[offset--] = difference.toInt()
+    carry = ((product ushr 32) + if (difference and LONG_MASK > product.toInt().inv().toLong() and LONG_MASK) 1 else 0)
+
+    return carry.toInt()
+  }
+
+  private fun divaddLong(dh: Int, dl: Int, result: IntArray, offset: Int): Int {
+    var carry: Long = 0
+    var sum = (dl.toLong() and LONG_MASK) + (result[1 + offset].toLong() and LONG_MASK)
+    result[1 + offset] = sum.toInt()
+    sum = (dh.toLong() and LONG_MASK) + (result[offset].toLong() and LONG_MASK) + carry
+    result[offset] = sum.toInt()
+    carry = sum ushr 32
+    return carry.toInt()
+  }
+
   operator fun compareTo(b: MutableBigIntImpl): Int {
     if (intLen < b.intLen)
       return -1
@@ -954,6 +1115,12 @@ internal class MutableBigIntImpl {
       value = tmp
     }
     return value
+  }
+
+  private fun toLong(): Long {
+    if (intLen == 0) return 0
+    val d = value[offset].toLong() and LONG_MASK
+    return if (intLen == 2) d shl 32 or (value[offset + 1].toLong() and LONG_MASK) else d
   }
 
   private fun mulsub(q: IntArray, a: IntArray, x: Int, len: Int, offset: Int): Int {
@@ -1026,6 +1193,38 @@ internal class MutableBigIntImpl {
 
     return (r shl 32) or (q and LONG_MASK)
   }
+
+  fun compareHalf(b: MutableBigIntImpl): Int {
+    val blen: Int = b.intLen
+    val len = intLen
+    if (len <= 0) return if (blen <= 0) 0 else -1
+    if (len > blen) return 1
+    if (len < blen - 1) return -1
+    val bval: IntArray = b.value
+    var bstart = 0
+    var carry = 0
+    // Only 2 cases left:len == blen or len == blen - 1
+    if (len != blen) { // len == blen - 1
+      carry = if (bval[bstart] == 1) {
+        ++bstart
+        -0x80000000
+      } else return -1
+    }
+    // compare values with right-shifted values of b,
+    // carrying shifted-out bits across words
+    val `val` = value
+    var i = offset
+    var j = bstart
+    while (i < len + offset) {
+      val bv = bval[j++]
+      val hb = ((bv ushr 1) + carry).toLong() and LONG_MASK
+      val v = `val`[i++].toLong() and LONG_MASK
+      if (v != hb) return if (v < hb) -1 else 1
+      carry = bv and 1 shl 31 // carray will be either 0x80000000 or 0
+    }
+    return if (carry == 0) 0 else -1
+  }
+
 }
 
 private fun copyAndShift(src: IntArray, srcFrom: Int, srcLen: Int, dst: IntArray, dstFrom: Int, shift: Int) {
