@@ -664,6 +664,10 @@ internal class BigIntImpl : BigInt {
 
     if (nBits == 0) {
       val newMagLen = magLen - nInts
+
+      if (newMagLen == 0)
+        return BigInt.Zero as BigIntImpl
+
       newMag = mag.copyOf(newMagLen)
     } else {
       var i = 0
@@ -675,6 +679,9 @@ internal class BigIntImpl : BigInt {
       } else {
         newMag = IntArray(magLen - nInts - 1)
       }
+
+      if (newMag.isEmpty())
+        return BigInt.Zero as BigIntImpl
 
       val numIter = magLen - nInts - 1
 
