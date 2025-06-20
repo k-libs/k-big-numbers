@@ -1,8 +1,11 @@
+import java.util.Base64
+
 plugins {
-  kotlin("multiplatform") version "1.9.25"
-  id("org.jetbrains.dokka") version "1.9.0"
   `maven-publish`
   signing
+  kotlin("multiplatform") version "1.9.25"
+  id("org.jetbrains.dokka") version "1.9.0"
+  id("tech.yanand.maven-central-publish") version "1.3.0"
 }
 
 group = "io.k-libs"
@@ -83,18 +86,15 @@ tasks.withType<Jar> {
   enabled = true
 }
 
-publishing {
-  repositories {
-    maven {
-      name = "Sonatype"
-      url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-      credentials {
-        username = project.findProperty("nexus.user") as String? ?: System.getenv("NEXUS_USER")
-        password = project.findProperty("nexus.pass") as String? ?: System.getenv("NEXUS_PASS")
-      }
-    }
-  }
+tasks.withType<PublishToMavenRepository> {
+  mustRunAfter(":signJvmPublication", ":signJsPublication", ":signKotlinMultiplatformPublication", ":signNativePublication")
+}
 
+mavenCentral {
+  authToken = Base64.getUrlEncoder().encodeToString("${project.properties["nexus.user"]}:${project.properties["nexus.pass"]}".toByteArray())
+}
+
+publishing {
   publications {
     withType<MavenPublication> {
       artifact(javadocJar)
