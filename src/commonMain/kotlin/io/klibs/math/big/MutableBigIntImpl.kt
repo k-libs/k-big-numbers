@@ -51,23 +51,21 @@ internal class MutableBigIntImpl {
       throw ArithmeticException("BigInteger divide by zero")
 
     // Dividend is zero
-
-    // Dividend is zero
     if (intLen == 0) {
       quotient.offset = 0
       quotient.intLen = quotient.offset
       return if (needRemainder) MutableBigIntImpl() else null
     }
 
-    val cmp: Int = compareTo(b)
-    // Dividend less than divisor
+    val cmp = compareTo(b)
+
     // Dividend less than divisor
     if (cmp < 0) {
       quotient.offset = 0
       quotient.intLen = quotient.offset
       return if (needRemainder) MutableBigIntImpl(this) else null
     }
-    // Dividend equal to divisor
+
     // Dividend equal to divisor
     if (cmp == 0) {
       quotient.intLen = 1
@@ -77,10 +75,10 @@ internal class MutableBigIntImpl {
     }
 
     quotient.clear()
-    // Special case one word divisor
+
     // Special case one word divisor
     if (b.intLen == 1) {
-      val r = divideOneWord(b.value.get(b.offset), quotient)
+      val r = divideOneWord(b.value[b.offset], quotient)
 
       return if (needRemainder) {
         if (r == 0) MutableBigIntImpl() else MutableBigIntImpl(r)
@@ -90,17 +88,15 @@ internal class MutableBigIntImpl {
     }
 
     // Cancel common powers of two if we're above the KNUTH_POW2_* thresholds
-
-    // Cancel common powers of two if we're above the KNUTH_POW2_* thresholds
     if (intLen >= KNUTH_POW2_THRESH_LEN) {
-      val trailingZeroBits: Int = min(getLowestSetBit(), b.getLowestSetBit())
+      val trailingZeroBits = min(getLowestSetBit(), b.getLowestSetBit())
 
       if (trailingZeroBits >= KNUTH_POW2_THRESH_ZEROS * 32) {
         val a = MutableBigIntImpl(this)
         b = MutableBigIntImpl(b)
         a.rightShift(trailingZeroBits)
         b.rightShift(trailingZeroBits)
-        val r: MutableBigIntImpl = a.divideKnuth(b, quotient)
+        val r = a.divideKnuth(b, quotient)
         r.leftShift(trailingZeroBits)
         return r
       }
@@ -334,7 +330,7 @@ internal class MutableBigIntImpl {
       var qrem = 0
       var skipCorrection = false
       val nh: Int = rem.value.get(j + rem.offset)
-      val nh2 = nh + -0x80000000
+      val nh2: Int = nh + -0x80000000
       val nm: Int = rem.value.get(j + 1 + rem.offset)
       if (nh == dh) {
         qhat = 0.inv()
@@ -702,8 +698,8 @@ internal class MutableBigIntImpl {
     var i = offset
     var j = b.offset
     while (i < alen + offset) {
-      val b1 = value[i] + 0x80000000
-      val b2 = bval[j] + 0x80000000
+      val b1 = (value[i] + 0x80000000).toInt()
+      val b2 = (bval[j] + 0x80000000).toInt()
 
       if (b1 < b2)
         return -1
@@ -918,8 +914,8 @@ internal class MutableBigIntImpl {
     var i = offset
     var j = b.offset
     while (i < intLen + offset) {
-      val b1 = value[i] + 0x80000000
-      val b2 = b.value[j] + 0x80000000
+      val b1 = (value[i] + 0x80000000).toInt()
+      val b2 = (b.value[j] + 0x80000000).toInt()
 
       if (b1 < b2)
         return -1

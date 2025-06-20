@@ -664,6 +664,10 @@ internal class BigIntImpl : BigInt {
 
     if (nBits == 0) {
       val newMagLen = magLen - nInts
+
+      if (newMagLen == 0)
+        return BigInt.Zero as BigIntImpl
+
       newMag = mag.copyOf(newMagLen)
     } else {
       var i = 0
@@ -675,6 +679,9 @@ internal class BigIntImpl : BigInt {
       } else {
         newMag = IntArray(magLen - nInts - 1)
       }
+
+      if (newMag.isEmpty())
+        return BigInt.Zero as BigIntImpl
 
       val numIter = magLen - nInts - 1
 
@@ -935,7 +942,19 @@ internal class BigIntImpl : BigInt {
     return BigIntImpl(1, trustedStripLeadingZeroInts(upperInts))
   }
 
-  private fun intLength() = bitLength() ushr 5
+  private fun intLength() = (bitLength() ushr 5) + 1
+
+  override fun equals(other: Any?): Boolean {
+    val o = other as? BigIntImpl ?: return false
+    return signum == o.signum && mag.contentEquals(o.mag)
+  }
+
+  override fun hashCode(): Int {
+    var out = 0
+    for (i in mag)
+      out = (31*out + (i.toLong() and LONG_MASK).toInt())
+    return out * signum;
+  }
 
   companion object {
     private fun multiplyToomCook3(a: BigIntImpl, b: BigIntImpl): BigIntImpl {

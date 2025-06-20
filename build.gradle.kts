@@ -1,12 +1,12 @@
 plugins {
-  kotlin("multiplatform") version "1.8.0"
-  id("org.jetbrains.dokka") version "1.7.20"
+  kotlin("multiplatform") version "1.9.25"
+  id("org.jetbrains.dokka") version "1.9.0"
   `maven-publish`
   signing
 }
 
 group = "io.k-libs"
-version = "0.1.0"
+version = "0.1.1"
 description = "Pure Kotlin BigInt and BigDec implementations"
 
 repositories {
@@ -19,6 +19,10 @@ kotlin {
       kotlinOptions.jvmTarget = "1.8"
     }
     withJava()
+    java {
+      sourceCompatibility = JavaVersion.VERSION_1_8
+      targetCompatibility = JavaVersion.VERSION_1_8
+    }
     testRuns["test"].executionTask.configure {
       useJUnitPlatform()
     }
